@@ -5,7 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="src\css\output.css" rel="stylesheet" />
-    <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
+    <script src="-\flowbite\dist\flowbite.min.js"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
@@ -40,7 +40,7 @@
                 ></path>
               </svg>
             </button>
-            <a href="https://flowbite.com" class="flex ms-2 md:me-24">
+            <a href="dashboard.html" class="flex ms-2 md:me-24">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg"
                 class="h-8 me-3"
@@ -98,7 +98,7 @@
                       href="#"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
-                      >Settings</a
+                      >Change Password</a
                     >
                   </li>
                   <li>
@@ -155,9 +155,9 @@
             <ol
               class="flex items-center w-full p-3 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
             >
-              <li class="flex items-center text-blue-600 dark:text-blue-500">
+              <li class="flex items-center text-green-600 dark:text-green-500">
                 <span
-                  class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-blue-600 rounded-full shrink-0 dark:border-blue-500"
+                  class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-green-600 rounded-full shrink-0 dark:border-green-500"
                 >
                   1
                 </span>
@@ -178,9 +178,9 @@
                   />
                 </svg>
               </li>
-              <li class="flex items-center">
+              <li class="flex items-center text-green-600 dark:text-green-500">
                 <span
-                  class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400"
+                  class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-green-600 rounded-full shrink-0 dark:border-green-500"
                 >
                   2
                 </span>
@@ -201,9 +201,9 @@
                   />
                 </svg>
               </li>
-              <li class="flex items-center">
+              <li class="flex items-center text-blue-600 dark:text-blue-500">
                 <span
-                  class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400"
+                  class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-blue-600 rounded-full shrink-0 dark:border-blue-500"
                 >
                   3
                 </span>
@@ -213,12 +213,12 @@
             <div
               class="h-full mt-2 w-full px-3 py-6 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
             >
-              <form action="penilaian2.html">
-                <div class="mb-4">
+              <form action="hasil_mutu.html">
+                <div class="mb-8">
                   <h3
                     class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
                   >
-                    Apakah ada Dokumen Hasil Penilaian ?
+                    Apakah Hasil Program Mengalami Peningkatan Nilai ?
                   </h3>
                   <ul class="grid w-full gap-6 md:grid-cols-2">
                     <li>
@@ -249,50 +249,6 @@
                       />
                       <label
                         for="hosting-big"
-                        class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-                      >
-                        <div class="block">
-                          <div class="w-full text-lg font-semibold">No</div>
-                        </div>
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-                <div class="mb-8">
-                  <h3
-                    class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
-                  >
-                    Apakah ada Dokumen Hasil Penilaian ?
-                  </h3>
-                  <ul class="grid w-full gap-6 md:grid-cols-2">
-                    <li>
-                      <input
-                        type="radio"
-                        id="docremedilYes"
-                        name="remedial"
-                        value="docremedilYes"
-                        class="hidden peer"
-                        required
-                      />
-                      <label
-                        for="docremedilYes"
-                        class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-                      >
-                        <div class="block">
-                          <div class="w-full text-lg font-semibold">Yes</div>
-                        </div>
-                      </label>
-                    </li>
-                    <li>
-                      <input
-                        type="radio"
-                        id="docremedilNo"
-                        name="remedial"
-                        value="docremedilNp"
-                        class="hidden peer"
-                      />
-                      <label
-                        for="docremedilNo"
                         class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
                       >
                         <div class="block">

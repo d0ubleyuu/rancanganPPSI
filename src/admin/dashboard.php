@@ -40,7 +40,7 @@
                 ></path>
               </svg>
             </button>
-            <a href="dashboard.html" class="flex ms-2 md:me-24">
+            <a href="dashboard.php" class="flex ms-2 md:me-24">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg"
                 class="h-8 me-3"
@@ -103,7 +103,7 @@
                   </li>
                   <li>
                     <a
-                      href="login.html"
+                      href="login.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Sign out</a
@@ -126,7 +126,7 @@
         <ul class="space-y-2 font-medium">
           <li>
             <a
-              href="#"
+              href="dashboard.php"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -148,7 +148,7 @@
           </li>
           <li>
             <a
-              href="sekolah.html"
+              href="sekolah.php"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -167,7 +167,7 @@
           </li>
           <li>
             <a
-              href="tendik.html"
+              href="tendik.php"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -187,7 +187,7 @@
           </li>
           <li>
             <a
-              href="#"
+              href="mapel.php"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg

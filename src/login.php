@@ -22,7 +22,7 @@
         <h1 class="text-2xl font-bold text-center mb-4 dark:text-gray-200">
           Welcome Back!
         </h1>
-        <form action="dashboard.html">
+        <form action="dashboard.php">
           <div class="mb-4">
             <label
               for="email"

@@ -40,7 +40,7 @@
                 ></path>
               </svg>
             </button>
-            <a href="dashboard.html" class="flex ms-2 md:me-24">
+            <a href="dashboard.php" class="flex ms-2 md:me-24">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg"
                 class="h-8 me-3"
@@ -213,7 +213,7 @@
             <div
               class="h-full mt-2 w-full px-3 py-6 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
             >
-              <form action="penilaian3.html">
+              <form action="penilaian3.php">
                 <div class="mb-4">
                   <h3
                     class="mb-5 text-lg font-medium text-gray-900 dark:text-white"

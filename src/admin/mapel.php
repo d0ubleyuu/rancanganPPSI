@@ -40,11 +40,11 @@
                 ></path>
               </svg>
             </button>
-            <a href="dashboard.html" class="flex ms-2 md:me-24">
+            <a href="dashboard.php" class="flex ms-2 md:me-24">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg"
                 class="h-8 me-3"
-                alt="Logo Dinas Pendidikan dan Kebudayaan"
+                alt="Logo Dinas Kelas dan Kebudayaan"
               />
               <span
                 class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
@@ -103,7 +103,7 @@
                   </li>
                   <li>
                     <a
-                      href="login.html"
+                      href="login.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Sign out</a
@@ -126,7 +126,7 @@
         <ul class="space-y-2 font-medium">
           <li>
             <a
-              href="dashboard.html"
+              href="dashboard.php"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -148,7 +148,7 @@
           </li>
           <li>
             <a
-              href="sekolah.html"
+              href="sekolah.php"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -167,7 +167,7 @@
           </li>
           <li>
             <a
-              href="tendik.html"
+              href="tendik.php"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -187,7 +187,7 @@
           </li>
           <li>
             <a
-              href="mapel.html"
+              href="mapel.php"
               class="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group"
             >
               <svg
@@ -227,7 +227,7 @@
               >
                 <div class="flex-1 flex items-center space-x-2">
                   <h5>
-                    <span class="text-gray-500">Semua Sekolah:</span>
+                    <span class="text-gray-500">Semua Mata Pelajaran:</span>
                     <span class="dark:text-white">123456</span>
                   </h5>
                   <h5 class="text-gray-500 dark:text-gray-400 ml-1">
@@ -290,7 +290,7 @@
                       <input
                         type="text"
                         id="simple-search"
-                        placeholder="Cari Sekolah"
+                        placeholder="Cari Mata Pelajaran"
                         required=""
                         class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       />
@@ -320,7 +320,7 @@
                         d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                       />
                     </svg>
-                    Tambah Sekolah
+                    Tambah Mata Pelajaran
                   </button>
                   <div
                     id="filterDropdown"
@@ -1212,11 +1212,11 @@
                         </div>
                       </th>
                       <th scope="col" class="p-4">Nama</th>
-                      <th scope="col" class="p-4">NPSN</th>
-                      <th scope="col" class="p-4">Pendidikan</th>
-                      <th scope="col" class="p-4">Status</th>
-                      <th scope="col" class="p-4">Akreditasi</th>
-                      <th scope="col" class="p-4">Tahun Berdiri</th>
+                      <th scope="col" class="p-4">Kode</th>
+                      <th scope="col" class="p-4">Kelas</th>
+                      <th scope="col" class="p-4">Sekolah</th>
+                      <th scope="col" class="p-4">Guru</th>
+                      <th scope="col" class="p-4">KKM</th>
                       <th scope="col" class="p-4">Level</th>
                       <th scope="col" class="p-4">Action</th>
                     </tr>
@@ -1242,9 +1242,7 @@
                         scope="row"
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        <div class="flex items-center mr-3">
-                          SDN 011 TJ PINANG
-                        </div>
+                        <div class="flex items-center mr-3">FIsika</div>
                       </th>
                       <td
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -1325,19 +1323,8 @@
                               d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
                             />
                           </svg>
-                          <svg
-                            aria-hidden="true"
-                            class="w-5 h-5 text-yellow-400"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                          </svg>
                           <span class="text-gray-500 dark:text-gray-400 ml-1"
-                            >5.0</span
+                            >4.0</span
                           >
                         </div>
                       </td>
@@ -1515,7 +1502,7 @@
                 class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600"
               >
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                  Tambah Sekolah
+                  Tambah Mata Pelajaran
                 </h3>
                 <button
                   type="button"
@@ -1559,29 +1546,29 @@
                   </div>
                   <div>
                     <label
-                      for="NPSN"
+                      for="Kode"
                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >NPSN</label
+                      >Kode</label
                     >
                     <input
                       type="number"
-                      name="NPSN"
-                      id="NPSN"
+                      name="Kode"
+                      id="Kode"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert NPSN"
+                      placeholder="Insert Kode"
                       required=""
                     />
                   </div>
                   <div>
                     <label
-                      for="pendidikan"
+                      for="Kelas"
                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Pendidikan</label
+                      >Kelas</label
                     ><select
-                      id="pendidikan"
+                      id="Kelas"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     >
-                      <option selected="">Pilih Jenjang Pendidikan</option>
+                      <option selected="">Pilih Jenjang Kelas</option>
                       <option value="SD/MI">SD/MI</option>
                       <option value="SD/MI">SMP/MTS</option>
                       <option value="SD/MI">SMA/SMK/MAN</option>
@@ -1589,32 +1576,32 @@
                   </div>
                   <div>
                     <label
-                      for="Akreditasi"
+                      for="Guru"
                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Akreditasi</label
+                      >Guru</label
                     ><select
-                      id="Akreditasi"
+                      id="Guru"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     >
-                      <option selected="">Pilih Akreditasi</option>
+                      <option selected="">Pilih Guru</option>
                       <option value="A">A (Unggul)</option>
                       <option value="B">B (Baik)</option>
                       <option value="C">C (Cukup)</option>
-                      <option value="TT">TT (Tidak Terakreditasi)</option>
+                      <option value="TT">TT (Tidak TerGuru)</option>
                     </select>
                   </div>
                   <div>
                     <label
                       for="tahunBerdiri"
                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Tahun Berdiri</label
+                      >KKM</label
                     >
                     <input
                       type="number"
                       name="tahunBerdiri"
                       id="tahunBerdiri"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert Tahun Berdiri"
+                      placeholder="Insert KKM"
                       required=""
                     />
                   </div>
@@ -1697,35 +1684,35 @@
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Type product name"
                       required=""
-                      value="SDN 011 TJ Pinang"
+                      value="FIsika"
                     />
                   </div>
                   <div>
                     <label
-                      for="NPSN"
+                      for="Kode"
                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >NPSN</label
+                      >Kode</label
                     >
                     <input
                       type="number"
-                      name="NPSN"
-                      id="NPSN"
+                      name="Kode"
+                      id="Kode"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert NPSN"
+                      placeholder="Insert Kode"
                       required=""
                       value="11001832"
                     />
                   </div>
                   <div>
                     <label
-                      for="pendidikan"
+                      for="Kelas"
                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Pendidikan</label
+                      >Kelas</label
                     ><select
-                      id="pendidikan"
+                      id="Kelas"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     >
-                      <option>Pilih Jenjang Pendidikan</option>
+                      <option>Pilih Jenjang Kelas</option>
                       <option value="SD/MI" selected="">SD/MI</option>
                       <option value="SD/MI">SMP/MTS</option>
                       <option value="SD/MI">SMA/SMK/MAN</option>
@@ -1733,32 +1720,32 @@
                   </div>
                   <div>
                     <label
-                      for="Akreditasi"
+                      for="Guru"
                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Akreditasi</label
+                      >Guru</label
                     ><select
-                      id="Akreditasi"
+                      id="Guru"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                     >
-                      <option>Pilih Akreditasi</option>
+                      <option>Pilih Guru</option>
                       <option value="A" selected="">A (Unggul)</option>
                       <option value="B">B (Baik)</option>
                       <option value="C">C (Cukup)</option>
-                      <option value="TT">TT (Tidak Terakreditasi)</option>
+                      <option value="TT">TT (Tidak TerGuru)</option>
                     </select>
                   </div>
                   <div>
                     <label
                       for="tahunBerdiri"
                       class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Tahun Berdiri</label
+                      >KKM</label
                     >
                     <input
                       type="number"
                       name="tahunBerdiri"
                       id="tahunBerdiri"
                       class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert Tahun Berdiri"
+                      placeholder="Insert KKM"
                       required=""
                       value="1999"
                     />

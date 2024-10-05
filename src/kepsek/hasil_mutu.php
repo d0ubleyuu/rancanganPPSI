@@ -40,7 +40,7 @@
                 ></path>
               </svg>
             </button>
-            <a href="dashboard.html" class="flex ms-2 md:me-24">
+            <a href="dashboard.php" class="flex ms-2 md:me-24">
               <img
                 src="https://upload.wikimedia.org/wikipedia/commons/9/9c/Logo_of_Ministry_of_Education_and_Culture_of_Republic_of_Indonesia.svg"
                 class="h-8 me-3"

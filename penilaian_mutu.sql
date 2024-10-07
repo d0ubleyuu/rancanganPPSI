@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 05 Okt 2024 pada 06.08
+-- Waktu pembuatan: 07 Okt 2024 pada 03.46
 -- Versi server: 10.4.27-MariaDB
 -- Versi PHP: 8.2.0
 
@@ -40,7 +40,8 @@ CREATE TABLE `document` (
 --
 
 INSERT INTO `document` (`id`, `id_mapel`, `waktu`, `path_doc_nilai`, `path_doc_remedial`) VALUES
-(1, 1, '2024-10-05 04:06:01', '.\\src\\document\\penilaian\\Informatika.pdf', '.\\src\\document\\remedial\\Informatika.pdf');
+(1, 1, '2024-10-05 04:06:01', 'penilaian_informatika.pdf', 'remedial_informatik.pdf'),
+(8, 4, '2024-10-06 16:40:52', 'MSI2101_Basis Data_Febri Putri_2024-10-06_Catatan_Penilaian.pdf', 'MSI2101_Basis Data_Febri Putri_2024-10-06_Laporan_Remedial.pdf');
 
 -- --------------------------------------------------------
 
@@ -54,7 +55,7 @@ CREATE TABLE `mapel` (
   `kode_mapel` varchar(12) NOT NULL,
   `nama` varchar(64) NOT NULL,
   `kkm` int(3) NOT NULL,
-  `mutu` int(1) DEFAULT NULL
+  `mutu` int(1) DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -62,7 +63,8 @@ CREATE TABLE `mapel` (
 --
 
 INSERT INTO `mapel` (`id`, `id_guru`, `kode_mapel`, `nama`, `kkm`, `mutu`) VALUES
-(1, 2, 'TIK001', 'Informatika', 75, 3);
+(1, 2, 'TIK001', 'Informatika', 75, 4),
+(4, 3, 'MSI2101', 'Basis Data', 80, NULL);
 
 -- --------------------------------------------------------
 
@@ -90,7 +92,7 @@ CREATE TABLE `penilaian_mutu` (
 --
 
 INSERT INTO `penilaian_mutu` (`id`, `id_doc`, `id_mapel`, `id_kepsek`, `waktu`, `doc_nilai`, `doc_remedial`, `sesuai_jadwal`, `metode_beragam`, `berkelanjutan`, `peningkatan`, `mutu`) VALUES
-(1, 1, 1, 2, '2024-10-05 04:07:39', 1, 1, 1, 0, 1, 1, 3);
+(3, 1, 1, 1, '2024-10-06 03:22:50', 1, 1, 1, 1, 1, 1, 4);
 
 -- --------------------------------------------------------
 
@@ -112,7 +114,9 @@ CREATE TABLE `sekolah` (
 --
 
 INSERT INTO `sekolah` (`id`, `npsm`, `nama`, `status`, `bp`, `akreditasi`) VALUES
-(1, 10403968, 'SMP NEGERI 13 PEKANBARU', 'Negeri', 'SMP', 'A');
+(1, 10403968, 'SMP NEGERI 13 PEKANBARU', 'Negeri', 'SMP', 'A'),
+(3, 10404376, ' SD DHARMA LOKA', 'Swasta', 'SD', 'A'),
+(4, 10495040, ' SD IT BINTANG CENDEKIA', 'Swasta', 'SD', 'B');
 
 -- --------------------------------------------------------
 
@@ -126,17 +130,20 @@ CREATE TABLE `tendik` (
   `nama` varchar(64) NOT NULL,
   `nip` bigint(18) NOT NULL,
   `jk` enum('L','P') NOT NULL,
-  `jabatan` enum('Kepsek','Guru') NOT NULL,
-  `pendidikan` enum('SMA/SMK','D1','D2','D3','D4','S1','S2','S3') NOT NULL
+  `jabatan` enum('Kepsek','Guru','Pengawas') NOT NULL,
+  `pendidikan` enum('SMA/SMK','D1','D2','D3','D4','S1','S2','S3') NOT NULL,
+  `email` varchar(64) NOT NULL,
+  `password` varchar(256) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data untuk tabel `tendik`
 --
 
-INSERT INTO `tendik` (`id`, `id_sekolah`, `nama`, `nip`, `jk`, `jabatan`, `pendidikan`) VALUES
-(1, 1, 'Muhammad', 2596414538113106, 'L', 'Kepsek', 'S2'),
-(2, 1, 'Jonathan', 2824263437853327, 'L', 'Guru', 'S1');
+INSERT INTO `tendik` (`id`, `id_sekolah`, `nama`, `nip`, `jk`, `jabatan`, `pendidikan`, `email`, `password`) VALUES
+(1, 1, 'Muhammad', 2596414538113106, 'L', 'Kepsek', 'S2', 'muhammad3106@kepsek.disdindik.sch.id', '38113106'),
+(2, 1, 'Jonathan', 2824263437853327, 'L', 'Guru', 'S1', 'jonathan3327@guru.disdindik.sch.id', '37853327'),
+(3, 1, 'Febri Putri', 552641401216153813, 'P', 'Pengawas', 'D4', 'febri.putri3813@pengawas.disdindik.sch.id', '16153813');
 
 --
 -- Indexes for dumped tables
@@ -186,31 +193,31 @@ ALTER TABLE `tendik`
 -- AUTO_INCREMENT untuk tabel `document`
 --
 ALTER TABLE `document`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT untuk tabel `mapel`
 --
 ALTER TABLE `mapel`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `penilaian_mutu`
 --
 ALTER TABLE `penilaian_mutu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT untuk tabel `sekolah`
 --
 ALTER TABLE `sekolah`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT untuk tabel `tendik`
 --
 ALTER TABLE `tendik`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)

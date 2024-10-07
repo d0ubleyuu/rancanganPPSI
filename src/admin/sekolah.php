@@ -1,3 +1,82 @@
+<?php
+// Koneksi ke database
+$host = "localhost"; 
+$dbname = "penilaian_mutu"; 
+$username = "root"; 
+$password = ""; 
+try {
+    $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
+    $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    echo "Koneksi gagal: " . $e->getMessage();
+}
+// Fungsi untuk menambah sekolah
+if (isset($_POST['add'])) {
+    $npsm = $_POST['npsm'];
+    $nama = $_POST['nama'];
+    $status = $_POST['status'];
+    $bp = $_POST['bp'];
+    $akreditasi = $_POST['akreditasi'];
+
+    try {
+        $sql = "INSERT INTO sekolah (npsm, nama, status, bp, akreditasi) VALUES (:npsm, :nama, :status, :bp, :akreditasi)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':npsm', $npsm);
+        $stmt->bindParam(':nama', $nama);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':bp', $bp);
+        $stmt->bindParam(':akreditasi', $akreditasi);
+        $stmt->execute();
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
+
+// Fungsi untuk memperbarui sekolah
+if (isset($_POST['update'])) {
+    $id = $_POST['id'];
+    $npsm = $_POST['npsm'];
+    $nama = $_POST['nama'];
+    $status = $_POST['status'];
+    $bp = $_POST['bp'];
+    $akreditasi = $_POST['akreditasi'];
+
+    try {
+        $sql = "UPDATE sekolah SET npsm = :npsm, nama = :nama, status = :status, bp = :bp, akreditasi = :akreditasi WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':npsm', $npsm);
+        $stmt->bindParam(':nama', $nama);
+        $stmt->bindParam(':status', $status);
+        $stmt->bindParam(':bp', $bp);
+        $stmt->bindParam(':akreditasi', $akreditasi);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
+if (isset($_POST['delete'])) {
+    $id = $_POST['id'];
+
+    try {
+        $sql = "DELETE FROM sekolah WHERE id = :id";
+        $stmt = $conn->prepare($sql);
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
+    } catch (PDOException $e) {
+        echo "Error: " . $e->getMessage();
+    }
+}
+
+
+
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -381,360 +460,11 @@
                       data-active-classes="text-black dark:text-white"
                       data-inactive-classes="text-gray-500 dark:text-gray-400"
                     >
-                      <!-- Category -->
-                      <h2 id="category-heading">
-                        <button
-                          type="button"
-                          class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-b border-gray-200 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          data-accordion-target="#category-body"
-                          aria-expanded="true"
-                          aria-controls="category-body"
-                        >
-                          <span>Category</span>
-                          <svg
-                            aria-hidden="true"
-                            data-accordion-icon=""
-                            class="w-5 h-5 rotate-180 shrink-0"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            />
-                          </svg>
+                     
+                       
                         </button>
                       </h2>
-                      <div
-                        id="category-body"
-                        class="hidden"
-                        aria-labelledby="category-heading"
-                      >
-                        <div
-                          class="py-2 font-light border-b border-gray-200 dark:border-gray-600"
-                        >
-                          <ul class="space-y-2">
-                            <li class="flex items-center">
-                              <input
-                                id="apple"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="apple"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Apple (56)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="microsoft"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="microsoft"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Microsoft (45)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="logitech"
-                                type="checkbox"
-                                value=""
-                                checked=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="logitech"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Logitech (97)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="sony"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="sony"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Sony (234)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="asus"
-                                type="checkbox"
-                                value=""
-                                checked=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="asus"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Asus (97)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="dell"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="dell"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Dell (56)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="msi"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="msi"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >MSI (97)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="canon"
-                                type="checkbox"
-                                value=""
-                                checked=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="canon"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Canon (49)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="benq"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="benq"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >BenQ (23)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="razor"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="razor"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Razor (49)</label
-                              >
-                            </li>
-                            <a
-                              href="#"
-                              class="flex items-center text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                              >View all</a
-                            >
-                          </ul>
-                        </div>
-                      </div>
-                      <!-- Price -->
-                      <h2 id="price-heading">
-                        <button
-                          type="button"
-                          class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-b border-gray-200 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          data-accordion-target="#price-body"
-                          aria-expanded="true"
-                          aria-controls="price-body"
-                        >
-                          <span>Price</span>
-                          <svg
-                            aria-hidden="true"
-                            data-accordion-icon=""
-                            class="w-5 h-5 rotate-180 shrink-0"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            />
-                          </svg>
-                        </button>
-                      </h2>
-                      <div
-                        id="price-body"
-                        class="hidden"
-                        aria-labelledby="price-heading"
-                      >
-                        <div
-                          class="flex items-center py-2 space-x-3 font-light border-b border-gray-200 dark:border-gray-600"
-                        >
-                          <select
-                            id="price-from"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          >
-                            <option disabled="" selected="">From</option>
-                            <option>$500</option>
-                            <option>$2500</option>
-                            <option>$5000</option></select
-                          ><select
-                            id="price-to"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          >
-                            <option disabled="" selected="">To</option>
-                            <option>$500</option>
-                            <option>$2500</option>
-                            <option>$5000</option>
-                          </select>
-                        </div>
-                      </div>
-                      <!-- Worldwide Shipping -->
-                      <h2 id="worldwide-shipping-heading">
-                        <button
-                          type="button"
-                          class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-b border-gray-200 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          data-accordion-target="#worldwide-shipping-body"
-                          aria-expanded="true"
-                          aria-controls="worldwide-shipping-body"
-                        >
-                          <span>Worldwide Shipping</span>
-                          <svg
-                            aria-hidden="true"
-                            data-accordion-icon=""
-                            class="w-5 h-5 rotate-180 shrink-0"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            />
-                          </svg>
-                        </button>
-                      </h2>
-                      <div
-                        id="worldwide-shipping-body"
-                        class="hidden"
-                        aria-labelledby="worldwide-shipping-heading"
-                      >
-                        <div
-                          class="py-2 space-y-2 font-light border-b border-gray-200 dark:border-gray-600"
-                        >
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                              checked=""
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >North America</span
-                            >
-                          </label>
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >South America</span
-                            >
-                          </label>
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >Asia</span
-                            >
-                          </label>
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                              checked=""
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >Australia</span
-                            >
-                          </label>
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >Europe</span
-                            >
-                          </label>
-                        </div>
-                      </div>
-                      <!-- Rating -->
-                      <h2 id="rating-heading">
+                     
                         <button
                           type="button"
                           class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -797,75 +527,9 @@
                                 fill="currentColor"
                                 viewbox="0 0 20 20"
                                 xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                          <div class="flex items-center">
-                            <input
-                              id="four-stars"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="four-stars"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
+                              
+                              
+                              
                                 aria-hidden="true"
                                 class="w-5 h-5 text-yellow-400"
                                 fill="currentColor"
@@ -876,261 +540,8 @@
                                 <path
                                   d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
                                 />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                          <div class="flex items-center">
-                            <input
-                              id="three-stars"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              checked=""
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="three-stars"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                          <div class="flex items-center">
-                            <input
-                              id="two-stars"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="two-stars"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                          <div class="flex items-center">
-                            <input
-                              id="one-star"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="one-star"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
+                              </>
+                           
                                 <title>Fifth star</title>
                                 <path
                                   d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
@@ -1211,16 +622,21 @@
                           >
                         </div>
                       </th>
-                      <th scope="col" class="p-4">Nama</th>
                       <th scope="col" class="p-4">NPSN</th>
-                      <th scope="col" class="p-4">Pendidikan</th>
+                      <th scope="col" class="p-4">Nama</th>
+                      <th scope="col" class="p-4">BP</th>
                       <th scope="col" class="p-4">Status</th>
                       <th scope="col" class="p-4">Akreditasi</th>
-                      <th scope="col" class="p-4">Tahun Berdiri</th>
-                      <th scope="col" class="p-4">Level</th>
-                      <th scope="col" class="p-4">Action</th>
+
+
                     </tr>
                   </thead>
+                  <?php
+                        try {
+                            $stmt = $conn->prepare("SELECT * FROM sekolah");
+                            $stmt->execute();
+                            while ($row = $stmt->fetch()) {
+                            ?>
                   <tbody>
                     <tr
                       class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -1238,107 +654,33 @@
                           >
                         </div>
                       </td>
-                      <th
-                        scope="row"
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <div class="flex items-center mr-3">
-                          SDN 011 TJ PINANG
-                        </div>
-                      </th>
                       <td
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        11001832
+                      <?php echo   $row['npsm']  ;?> 
                       </td>
                       <td
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        SD
+                      <?php echo   $row['nama']  ;?> 
                       </td>
                       <td
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        <span
-                          class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
-                          >Negeri</span
-                        >
+                        <?php echo   $row['bp']  ;?>
                       </td>
                       <td
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        <span
-                          class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-green-900 dark:text-green-300"
-                          >A</span
-                        >
+                        <?php echo   $row['status']  ;?>
                       </td>
                       <td
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                        1999
+                      <?php echo   $row['akreditasi']  ;?> 
                       </td>
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <div class="flex items-center">
-                          <svg
-                            aria-hidden="true"
-                            class="w-5 h-5 text-yellow-400"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                          </svg>
-                          <svg
-                            aria-hidden="true"
-                            class="w-5 h-5 text-yellow-400"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                          </svg>
-                          <svg
-                            aria-hidden="true"
-                            class="w-5 h-5 text-yellow-400"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                          </svg>
-                          <svg
-                            aria-hidden="true"
-                            class="w-5 h-5 text-yellow-400"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                          </svg>
-                          <svg
-                            aria-hidden="true"
-                            class="w-5 h-5 text-yellow-400"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                            />
-                          </svg>
-                          <span class="text-gray-500 dark:text-gray-400 ml-1"
-                            >5.0</span
-                          >
+                      
+                          
                         </div>
                       </td>
 
@@ -1348,8 +690,10 @@
                         <div class="flex items-center space-x-4">
                           <button
                             type="button"
-                            data-modal-target="updateProductModal"
-                            data-modal-toggle="updateProductModal"
+                            data-modal-target="updateProductModal<?php echo $row['id']; ?>"
+                            data-modal-toggle="updateProductModal<?php echo $row['id']; ?>"
+                            
+                            
                             aria-controls="drawer-update-product"
                             class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                           >
@@ -1373,8 +717,9 @@
                           </button>
                           <button
                             type="button"
-                            data-modal-target="deleteModal"
-                            data-modal-toggle="deleteModal"
+                           data-modal-target="deleteModal<?php echo $row['id']; ?>"
+                           data-modal-toggle="deleteModal<?php echo $row['id']; ?>"
+                            
                             class="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
                           >
                             <svg
@@ -1394,7 +739,231 @@
                           </button>
                         </div>
                       </td>
-                    </tr>
+                    </tr> 
+                    <!-- Update Modal -->
+<div
+  id="updateProductModal<?php echo $row['id']; ?>"
+  tabindex="-1"
+  aria-hidden="true"
+  class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+>
+  <div class="relative p-4 w-full max-w-2xl max-h-full">
+    <!-- Modal content -->
+    <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+      <!-- Modal header -->
+      <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          Update Sekolah
+        </h3>
+        <button
+          type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+          data-modal-toggle="updateProductModal<?php echo $row['id']; ?>"
+        >
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <form method="POST">
+        <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+        <div class="grid gap-4 mb-4 sm:grid-cols-2">
+          
+            
+          <div>
+            <label
+              for="npsm"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >NPSN</label
+            >
+            <input
+              type="number"
+              name="npsm"
+              id="npsm"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value="<?php echo $row['npsm']; ?>"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="nama"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Nama</label
+            >
+            <input
+              type="text"
+              name="nama"
+              id="nama"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value="<?php echo $row['nama']; ?>"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="status"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Status</label
+            >
+            <select
+              id="status"
+              name="status"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            >
+             
+              <option value="Negeri" <?php echo ($row['status']== 'Negeri') ? 'selected' : ''; ?>>Negeri</option>
+              <option value="Swasta" <?php echo ($row['status']== 'Swasta') ? 'selected' : ''; ?>>Swasta</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="updateBp"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >BP</label
+            >
+            <select
+              id="bp"
+              name="bp"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            >
+              
+              <option value="SD" <?php echo ($row['bp'] == 'SD') ? 'selected' : ''; ?>>SD</option>
+                <option value="SMP" <?php echo ($row['bp'] == 'SMP') ? 'selected' : ''; ?>>SMP</option>
+                <option value="SMA" <?php echo ($row['bp']== 'SMA') ? 'selected' : ''; ?>>SMA</option>
+                <option value="SMK" <?php echo ($row['bp'] == 'SMK') ? 'selected' : ''; ?>>SMK</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="akreditasi"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Akreditasi</label
+            >
+            <select
+              id="akreditasi"
+              name="akreditasi"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            >
+            
+              <option value="A" <?php echo ($row['akreditasi'] == 'A') ? 'selected' : ''; ?>>A</option>
+                                <option value="B" <?php echo ($row['akreditasi'] == 'B') ? 'selected' : ''; ?>>B</option>
+                                <option value="C" <?php echo ($row['akreditasi'] == 'C') ? 'selected' : ''; ?>>C</option>
+                                <option value="TT" <?php echo ($row['akreditasi'] == 'TT') ? 'selected' : ''; ?>>TT</option>
+            </select>
+          </div>
+        </div>
+        <button
+          type="submit"
+           name="update"
+          class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          <svg
+            class="mr-1 -ml-1 w-6 h-6"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Update Sekolah
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<div
+          id="deleteModal<?php echo $row['id']?>" 
+          tabindex="-1"
+          aria-hidden="true"
+          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+        >
+          <div class="relative p-4 w-full max-w-md max-h-full">
+            <!-- Modal content -->
+            <div
+              class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
+            >
+              <button
+                type="button"
+                class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                data-modal-toggle="deleteModal<?php echo $row['id']?>"
+              >
+                <svg
+                  aria-hidden="true"
+                  class="w-5 h-5"
+                  fill="currentColor"
+                  viewbox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                <span class="sr-only">Close modal</span>
+              </button>
+              <svg
+                class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto"
+                aria-hidden="true"
+                fill="currentColor"
+                viewbox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <p class="mb-4 text-gray-500 dark:text-gray-300">
+                Are you sure you want to delete this item?
+              </p>
+              <div class="flex justify-center items-center space-x-4">
+              <form method="post">
+                <input type="hidden" name="id" value="<?php echo $row['id']?>">
+                <button
+                  data-modal-toggle="deleteModal"
+                  type="button"
+                  class="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                >
+                  No, cancel
+                </button>
+                <button
+                  type="submit"
+                  name="delete"
+                  class="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
+                >
+                  Yes, I'm sure
+                </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
+                    <?php  } } catch (PDOException $e) {
+                            echo "Error: " . $e->getMessage();
+                        } ?>
                   </tbody>
                 </table>
               </div>
@@ -1499,371 +1068,323 @@
           </div>
         </section>
         <!-- End block -->
-        <div
-          id="createProductModal"
-          tabindex="-1"
-          aria-hidden="true"
-          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+        <!-- Create Modal -->
+<div
+  id="createProductModal"
+  tabindex="-1"
+  aria-hidden="true"
+  class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+>
+  <div class="relative p-4 w-full max-w-2xl max-h-full">
+    <!-- Modal content -->
+    <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+      <!-- Modal header -->
+      <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          Tambah Sekolah
+        </h3>
+        <button
+          type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+          data-modal-toggle="createProductModal"
         >
-          <div class="relative p-4 w-full max-w-2xl max-h-full">
-            <!-- Modal content -->
-            <div
-              class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
-            >
-              <!-- Modal header -->
-              <div
-                class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600"
-              >
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                  Tambah Sekolah
-                </h3>
-                <button
-                  type="button"
-                  class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                  data-modal-target="createProductModal"
-                  data-modal-toggle="createProductModal"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="w-5 h-5"
-                    fill="currentColor"
-                    viewbox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <span class="sr-only">Close modal</span>
-                </button>
-              </div>
-              <!-- Modal body -->
-              <form action="#">
-                <div class="grid gap-4 mb-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      for="name"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Nama</label
-                    >
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Type product name"
-                      required=""
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="NPSN"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >NPSN</label
-                    >
-                    <input
-                      type="number"
-                      name="NPSN"
-                      id="NPSN"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert NPSN"
-                      required=""
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="pendidikan"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Pendidikan</label
-                    ><select
-                      id="pendidikan"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option selected="">Pilih Jenjang Pendidikan</option>
-                      <option value="SD/MI">SD/MI</option>
-                      <option value="SD/MI">SMP/MTS</option>
-                      <option value="SD/MI">SMA/SMK/MAN</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      for="Akreditasi"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Akreditasi</label
-                    ><select
-                      id="Akreditasi"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option selected="">Pilih Akreditasi</option>
-                      <option value="A">A (Unggul)</option>
-                      <option value="B">B (Baik)</option>
-                      <option value="C">C (Cukup)</option>
-                      <option value="TT">TT (Tidak Terakreditasi)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      for="tahunBerdiri"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Tahun Berdiri</label
-                    >
-                    <input
-                      type="number"
-                      name="tahunBerdiri"
-                      id="tahunBerdiri"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert Tahun Berdiri"
-                      required=""
-                    />
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
-                  <svg
-                    class="mr-1 -ml-1 w-6 h-6"
-                    fill="currentColor"
-                    viewbox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  Add new school
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-        <!-- Update Modal -->
-        <div
-          id="updateProductModal"
-          tabindex="-1"
-          aria-hidden="true"
-          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
-        >
-          <div class="relative p-4 w-full max-w-2xl max-h-full">
-            <!-- Modal content -->
-            <div
-              class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
-            >
-              <!-- Modal header -->
-              <div
-                class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600"
-              >
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                  Update Product
-                </h3>
-                <button
-                  type="button"
-                  class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                  data-modal-toggle="updateProductModal"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="w-5 h-5"
-                    fill="currentColor"
-                    viewbox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <span class="sr-only">Close modal</span>
-                </button>
-              </div>
-              <!-- Modal body -->
-              <form action="#">
-                <div class="grid gap-4 mb-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      for="name"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Nama</label
-                    >
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Type product name"
-                      required=""
-                      value="SDN 011 TJ Pinang"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="NPSN"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >NPSN</label
-                    >
-                    <input
-                      type="number"
-                      name="NPSN"
-                      id="NPSN"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert NPSN"
-                      required=""
-                      value="11001832"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="pendidikan"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Pendidikan</label
-                    ><select
-                      id="pendidikan"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option>Pilih Jenjang Pendidikan</option>
-                      <option value="SD/MI" selected="">SD/MI</option>
-                      <option value="SD/MI">SMP/MTS</option>
-                      <option value="SD/MI">SMA/SMK/MAN</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      for="Akreditasi"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Akreditasi</label
-                    ><select
-                      id="Akreditasi"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option>Pilih Akreditasi</option>
-                      <option value="A" selected="">A (Unggul)</option>
-                      <option value="B">B (Baik)</option>
-                      <option value="C">C (Cukup)</option>
-                      <option value="TT">TT (Tidak Terakreditasi)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      for="tahunBerdiri"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Tahun Berdiri</label
-                    >
-                    <input
-                      type="number"
-                      name="tahunBerdiri"
-                      id="tahunBerdiri"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert Tahun Berdiri"
-                      required=""
-                      value="1999"
-                    />
-                  </div>
-                </div>
-                <div class="flex items-center space-x-4">
-                  <button
-                    type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                  >
-                    Update product
-                  </button>
-                  <button
-                    type="button"
-                    class="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
-                  >
-                    <svg
-                      class="mr-1 -ml-1 w-5 h-5"
-                      fill="currentColor"
-                      viewbox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                    Delete
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        </div>
-        <!-- Delete Modal -->
-        <div
-          id="deleteModal"
-          tabindex="-1"
-          aria-hidden="true"
-          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
-        >
-          <div class="relative p-4 w-full max-w-md max-h-full">
-            <!-- Modal content -->
-            <div
-              class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
-            >
-              <button
-                type="button"
-                class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                data-modal-toggle="deleteModal"
-              >
-                <svg
-                  aria-hidden="true"
-                  class="w-5 h-5"
-                  fill="currentColor"
-                  viewbox="0 0 20 20"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                <span class="sr-only">Close modal</span>
-              </button>
-              <svg
-                class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto"
-                aria-hidden="true"
-                fill="currentColor"
-                viewbox="0 0 20 20"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  fill-rule="evenodd"
-                  d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                  clip-rule="evenodd"
-                />
-              </svg>
-              <p class="mb-4 text-gray-500 dark:text-gray-300">
-                Are you sure you want to delete this item?
-              </p>
-              <div class="flex justify-center items-center space-x-4">
-                <button
-                  data-modal-toggle="deleteModal"
-                  type="button"
-                  class="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-                >
-                  No, cancel
-                </button>
-                <button
-                  type="submit"
-                  class="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
-                >
-                  Yes, I'm sure
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
       </div>
+      <!-- Modal body -->
+      <form  method="POST">
+      <input type="hidden" name="id" value="<?php echo isset($dataToUpdate['id']) ? $dataToUpdate['id'] : ''; ?>">
+        <div class="grid gap-4 mb-4 sm:grid-cols-2">
+          <div>
+            <label
+              for="npsm"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >NPSN</label
+            >
+            <input
+              type="number"
+              name="npsm"
+              id="npsm"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Insert NPSM"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="nama"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Nama</label
+            >
+            <input
+              type="text"
+              name="nama"
+              id="nama"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Type school name"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="status"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Status</label
+            >
+            <select
+              id="status"
+              name="status"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            >
+              <option value="" selected>Pilih Status</option>
+              <option value="Negeri">Negeri</option>
+              <option value="Swasta">Swasta</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="bp"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Bentuk Pendidikan</label
+            >
+            <select
+              id="bp"
+              name="bp"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            >
+              <option value="" selected>Pilih Jenjang Pendidikan</option>
+              <option value="SD">SD</option>
+              <option value="SMP">SMP</option>
+              <option value="SMA">SMA</option>
+              <option value="SMK">SMK</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="akreditasi"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Akreditasi</label
+            >
+            <select
+              id="akreditasi"
+              name="akreditasi"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            >
+              <option value="" selected>Pilih Akreditasi</option>
+              <option value="A">A (Unggul)</option>
+              <option value="B">B (Baik)</option>
+              <option value="C">C (Cukup)</option>
+              <option value="TT">TT (Tidak Terakreditasi)</option>
+            </select>
+          </div>
+        </div>
+        <button 
+
+          type="submit"
+          name="add"
+          class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          <svg
+            class="mr-1 -ml-1 w-6 h-6"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Tambah Sekolah
+        </button>
+      </form>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
-  </body>
+  </div>
+</div>
+
+<!-- Update Modal -->
+<div
+  id="updateProductModal"
+  tabindex="-1"
+  aria-hidden="true"
+  class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+>
+  <div class="relative p-4 w-full max-w-2xl max-h-full">
+    <!-- Modal content -->
+    <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+      <!-- Modal header -->
+      <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+          Update Sekolah
+        </h3>
+        <button
+          type="button"
+          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+          data-modal-toggle="updateProductModal"
+        >
+          <svg
+            aria-hidden="true"
+            class="w-5 h-5"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          <span class="sr-only">Close modal</span>
+        </button>
+      </div>
+      <!-- Modal body -->
+      <form method="POST">
+      <input type="hidden" name="id" value="<?php echo isset($dataToUpdate['id']) ? $dataToUpdate['id'] : ''; ?>">
+        <div class="grid gap-4 mb-4 sm:grid-cols-2">
+          <div>
+            <label
+              for="updateId"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >ID</label
+            >
+            <input
+              type="text"
+              name="updateId"
+              id="updateId"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="Insert ID"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="updateNpsm"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >NPSN</label
+            >
+            <input
+              type="number"
+              name="updateNpsm"
+              id="updateNpsm"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value="<?php echo isset($dataToUpdate['npsm']) ? $dataToUpdate['npsm'] : ''; ?>"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="updateNama"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Nama</label
+            >
+            <input
+              type="text"
+              name="updateNama"
+              id="updateNama"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              value="<?php echo isset($dataToUpdate['nama']) ? $dataToUpdate['nama'] : ''; ?>"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="updateStatus"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Status</label
+            >
+            <select
+              id="updateStatus"
+              name="updateStatus"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            >
+             
+              <option value="Negeri" <?php echo (isset($dataToUpdate['status']) && $dataToUpdate['status'] == 'Negeri') ? 'selected' : ''; ?>>Negeri</option>
+              <option value="Swasta" <?php echo (isset($dataToUpdate['status']) && $dataToUpdate['status'] == 'Swasta') ? 'selected' : ''; ?>>Swasta</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="updateBp"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >BP</label
+            >
+            <select
+              id="updateBp"
+              name="updateBp"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            >
+              
+              <option value="SD" <?php echo (isset($dataToUpdate['bp']) && $dataToUpdate['bp'] == 'SD') ? 'selected' : ''; ?>>SD</option>
+                <option value="SMP" <?php echo (isset($dataToUpdate['bp']) && $dataToUpdate['bp'] == 'SMP') ? 'selected' : ''; ?>>SMP</option>
+                <option value="SMA" <?php echo (isset($dataToUpdate['bp']) && $dataToUpdate['bp'] == 'SMA') ? 'selected' : ''; ?>>SMA</option>
+                <option value="SMK" <?php echo (isset($dataToUpdate['bp']) && $dataToUpdate['bp'] == 'SMK') ? 'selected' : ''; ?>>SMK</option>
+            </select>
+          </div>
+          <div>
+            <label
+              for="updateAkreditasi"
+              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+              >Akreditasi</label
+            >
+            <select
+              id="updateAkreditasi"
+              name="updateAkreditasi"
+              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              required
+            >
+            
+              <option value="A" <?php echo (isset($dataToUpdate['akreditasi']) && $dataToUpdate['akreditasi'] == 'A') ? 'selected' : ''; ?>>A</option>
+                                <option value="B" <?php echo (isset($dataToUpdate['akreditasi']) && $dataToUpdate['akreditasi'] == 'B') ? 'selected' : ''; ?>>B</option>
+                                <option value="C" <?php echo (isset($dataToUpdate['akreditasi']) && $dataToUpdate['akreditasi'] == 'C') ? 'selected' : ''; ?>>C</option>
+                                <option value="TT" <?php echo (isset($dataToUpdate['akreditasi']) && $dataToUpdate['akreditasi'] == 'TT') ? 'selected' : ''; ?>>TT</option>
+            </select>
+          </div>
+        </div>
+        <button
+          type="submit"
+           name="update"
+          class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          <svg
+            class="mr-1 -ml-1 w-6 h-6"
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Update Sekolah
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+</body>
 </html>
+
+

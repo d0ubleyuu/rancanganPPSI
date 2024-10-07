@@ -1,3 +1,108 @@
+<?php
+// Include Koneksi.php
+require_once '../koneksi.php';
+
+// Bagian Insert (Create)
+if (isset($_POST['submit_add'])) {
+  $id_sekolah = $_POST['id_sekolah'];
+  $nama = $_POST['nama'];
+  $nip = $_POST['nip'];
+  $jk = $_POST['jk'];
+  $jabatan = $_POST['jabatan'];
+  $pendidikan = $_POST['pendidikan'];
+  $password = substr($nip, -8);
+  $username = str_replace('. ', '.', $nama);
+  $username = str_replace(' ', '.', $username) . substr($nip, -4);
+  $email = "$username@$jabatan.disdindik.sch.id";
+  $email = strtolower($email);
+
+  $sql = "INSERT INTO tendik (id_sekolah, nama, nip, jk, jabatan, pendidikan, email, password) 
+          VALUES ('$id_sekolah', '$nama', '$nip', '$jk', '$jabatan', '$pendidikan', '$email', '$password')";
+
+  if ($koneksi->query($sql) === TRUE) {
+      // Redirect to tendikk.php after successful insertion
+      header("Location: tendik.php");
+      exit();
+  } else {
+      echo "Error: " . $sql . "<br>" . $koneksi->error;
+  }
+}
+
+
+// Update existing record
+if (isset($_POST['submit_edit'])) {
+    $id = $_POST['id'];
+    $id_sekolah = $_POST['id_sekolah'];
+    $nama = $_POST['nama'];
+    $nip = $_POST['nip'];
+    $jk = $_POST['jk'];
+    $jabatan = $_POST['jabatan'];
+    $pendidikan = $_POST['pendidikan'];
+
+    $sql = "UPDATE tendik SET id_sekolah='$id_sekolah', nama='$nama', nip='$nip', jk='$jk', 
+            jabatan='$jabatan', pendidikan='$pendidikan' WHERE id='$id'";
+
+    if ($koneksi->query($sql) === TRUE) {
+        // Redirect to tendikk.php after successful update
+        header("Location: tendik.php");
+        exit();
+    } else {
+        echo "Error: " . $sql . "<br>" . $koneksi->error;
+    }
+}
+
+// Reset Password
+if (isset($_POST['reset_password'])) {
+    $id = $_POST['id'];
+    $pass = $_POST['nip'];
+    $password = substr($pass, -8);
+
+    $sql = "UPDATE tendik SET password='$password' WHERE id='$id'";
+
+    if ($koneksi->query($sql) === TRUE) {
+        // Redirect to tendikk.php after successful update
+        header("Location: tendik.php");
+        exit();
+    } else {
+        echo "Error: " . $sql . "<br>" . $koneksi->error;
+    }
+}
+
+// Delete record
+if (isset($_GET['delete'])) {
+    $id = $_GET['delete'];
+    $sql = "DELETE FROM tendik WHERE id='$id'";
+
+    if ($koneksi->query($sql) === TRUE) {
+        echo "Data berhasil dihapus.";
+    } else {
+        echo "Error: " . $sql . "<br>" . $koneksi->error;
+    }
+}
+
+// Fetch record for editing
+$edit_row = null;
+if (isset($_GET['edit'])) {
+    $id = $_GET['edit'];
+    $sql = "SELECT * FROM tendik WHERE id='$id'";
+    $result = $koneksi->query($sql);
+    $edit_row = $result->fetch_assoc();
+}
+
+// Fetch all records (Read)
+$sql = "SELECT * FROM tendik";
+$result = $koneksi->query($sql);
+
+// Query untuk menghitung jumlah ID dalam tabel tendik
+$queryTendik = "SELECT COUNT(id) as total FROM tendik";
+$resultTendik = $koneksi->query($queryTendik);
+$totalTendik = 0;
+
+if ($resultTendik->num_rows > 0) {
+    $data = $resultTendik->fetch_assoc();
+    $totalTendik = $data['total'];
+}
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -228,7 +333,7 @@
                 <div class="flex-1 flex items-center space-x-2">
                   <h5>
                     <span class="text-gray-500">Semua Guru dan Tendik:</span>
-                    <span class="dark:text-white">123456</span>
+                    <span class="dark:text-white"><?= $totalTendik ?></span>
                   </h5>
                   <h5 class="text-gray-500 dark:text-gray-400 ml-1">
                     1-100 (436)
@@ -375,772 +480,6 @@
                         />
                       </div>
                     </div>
-                    <div
-                      id="accordion-flush"
-                      data-accordion="collapse"
-                      data-active-classes="text-black dark:text-white"
-                      data-inactive-classes="text-gray-500 dark:text-gray-400"
-                    >
-                      <!-- Category -->
-                      <h2 id="category-heading">
-                        <button
-                          type="button"
-                          class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-b border-gray-200 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          data-accordion-target="#category-body"
-                          aria-expanded="true"
-                          aria-controls="category-body"
-                        >
-                          <span>Category</span>
-                          <svg
-                            aria-hidden="true"
-                            data-accordion-icon=""
-                            class="w-5 h-5 rotate-180 shrink-0"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            />
-                          </svg>
-                        </button>
-                      </h2>
-                      <div
-                        id="category-body"
-                        class="hidden"
-                        aria-labelledby="category-heading"
-                      >
-                        <div
-                          class="py-2 font-light border-b border-gray-200 dark:border-gray-600"
-                        >
-                          <ul class="space-y-2">
-                            <li class="flex items-center">
-                              <input
-                                id="apple"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="apple"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Apple (56)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="microsoft"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="microsoft"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Microsoft (45)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="logitech"
-                                type="checkbox"
-                                value=""
-                                checked=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="logitech"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Logitech (97)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="sony"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="sony"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Sony (234)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="asus"
-                                type="checkbox"
-                                value=""
-                                checked=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="asus"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Asus (97)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="dell"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="dell"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Dell (56)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="msi"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="msi"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >MSI (97)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="canon"
-                                type="checkbox"
-                                value=""
-                                checked=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="canon"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Canon (49)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="benq"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="benq"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >BenQ (23)</label
-                              >
-                            </li>
-                            <li class="flex items-center">
-                              <input
-                                id="razor"
-                                type="checkbox"
-                                value=""
-                                class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
-                              />
-                              <label
-                                for="razor"
-                                class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100"
-                                >Razor (49)</label
-                              >
-                            </li>
-                            <a
-                              href="#"
-                              class="flex items-center text-sm font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                              >View all</a
-                            >
-                          </ul>
-                        </div>
-                      </div>
-                      <!-- Price -->
-                      <h2 id="price-heading">
-                        <button
-                          type="button"
-                          class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-b border-gray-200 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          data-accordion-target="#price-body"
-                          aria-expanded="true"
-                          aria-controls="price-body"
-                        >
-                          <span>Price</span>
-                          <svg
-                            aria-hidden="true"
-                            data-accordion-icon=""
-                            class="w-5 h-5 rotate-180 shrink-0"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            />
-                          </svg>
-                        </button>
-                      </h2>
-                      <div
-                        id="price-body"
-                        class="hidden"
-                        aria-labelledby="price-heading"
-                      >
-                        <div
-                          class="flex items-center py-2 space-x-3 font-light border-b border-gray-200 dark:border-gray-600"
-                        >
-                          <select
-                            id="price-from"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          >
-                            <option disabled="" selected="">From</option>
-                            <option>$500</option>
-                            <option>$2500</option>
-                            <option>$5000</option></select
-                          ><select
-                            id="price-to"
-                            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                          >
-                            <option disabled="" selected="">To</option>
-                            <option>$500</option>
-                            <option>$2500</option>
-                            <option>$5000</option>
-                          </select>
-                        </div>
-                      </div>
-                      <!-- Worldwide Shipping -->
-                      <h2 id="worldwide-shipping-heading">
-                        <button
-                          type="button"
-                          class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 border-b border-gray-200 dark:border-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          data-accordion-target="#worldwide-shipping-body"
-                          aria-expanded="true"
-                          aria-controls="worldwide-shipping-body"
-                        >
-                          <span>Worldwide Shipping</span>
-                          <svg
-                            aria-hidden="true"
-                            data-accordion-icon=""
-                            class="w-5 h-5 rotate-180 shrink-0"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            />
-                          </svg>
-                        </button>
-                      </h2>
-                      <div
-                        id="worldwide-shipping-body"
-                        class="hidden"
-                        aria-labelledby="worldwide-shipping-heading"
-                      >
-                        <div
-                          class="py-2 space-y-2 font-light border-b border-gray-200 dark:border-gray-600"
-                        >
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                              checked=""
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >North America</span
-                            >
-                          </label>
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >South America</span
-                            >
-                          </label>
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >Asia</span
-                            >
-                          </label>
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                              checked=""
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >Australia</span
-                            >
-                          </label>
-                          <label
-                            class="relative flex items-center cursor-pointer"
-                          >
-                            <input
-                              type="checkbox"
-                              value=""
-                              class="sr-only peer"
-                              name="shipping"
-                            />
-                            <div
-                              class="w-9 h-5 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-                            ></div>
-                            <span
-                              class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300"
-                              >Europe</span
-                            >
-                          </label>
-                        </div>
-                      </div>
-                      <!-- Rating -->
-                      <h2 id="rating-heading">
-                        <button
-                          type="button"
-                          class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          data-accordion-target="#rating-body"
-                          aria-expanded="true"
-                          aria-controls="rating-body"
-                        >
-                          <span>Rating</span>
-                          <svg
-                            aria-hidden="true"
-                            data-accordion-icon=""
-                            class="w-5 h-5 rotate-180 shrink-0"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            />
-                          </svg>
-                        </button>
-                      </h2>
-                      <div
-                        id="rating-body"
-                        class="hidden"
-                        aria-labelledby="rating-heading"
-                      >
-                        <div
-                          class="py-2 space-y-2 font-light border-b border-gray-200 dark:border-gray-600"
-                        >
-                          <div class="flex items-center">
-                            <input
-                              id="five-stars"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="five-stars"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                          <div class="flex items-center">
-                            <input
-                              id="four-stars"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="four-stars"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                          <div class="flex items-center">
-                            <input
-                              id="three-stars"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              checked=""
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="three-stars"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                          <div class="flex items-center">
-                            <input
-                              id="two-stars"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="two-stars"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                          <div class="flex items-center">
-                            <input
-                              id="one-star"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="one-star"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Third star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fourth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-gray-300 dark:text-gray-500"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
                   <div class="flex items-center space-x-3 w-full md:w-auto">
                     <button
@@ -1220,208 +559,197 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr
-                      class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      <td class="p-4 w-4">
-                        <div class="flex items-center">
-                          <input
-                            id="checkbox-table-search-1"
-                            type="checkbox"
-                            onclick="event.stopPropagation()"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          />
-                          <label for="checkbox-table-search-1" class="sr-only"
-                            >checkbox</label
+                  <?php while($row = $result->fetch_assoc()): ?>
+                    <tr class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700">
+                              <td class="p-4 w-4">
+                                  <div class="flex items-center">
+                                      <input
+                                          id="checkbox-table-search-<?php echo $row['id']; ?>"
+                                          type="checkbox"
+                                          onclick="event.stopPropagation()"
+                                          class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                      />
+                                      <label for="checkbox-table-search-<?php echo $row['id']; ?>" class="sr-only">checkbox</label>
+                                  </div>
+                              </td>
+                              <th scope="row" class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <div class="flex items-center mr-3"><?php echo $row['nama']; // Menampilkan nama dari tabel tendikk ?></div>
+                              </th>
+                              <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <?php echo $row['nip']; ?>
+                              </td>
+                              <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                                      <?php echo $row['jabatan']; ?>
+                                  </span>
+                              </td>
+                              <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <?php echo $row['jk']; ?>
+                              </td>
+                              <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <?php echo $row['pendidikan']; ?>
+                              </td>
+                              <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <div class="flex items-center space-x-4">
+                                  <button 
+                                    type="button" 
+                                    data-modal-target="updateProductModal<?php echo $row['id']; ?>" 
+                                    data-modal-toggle="updateProductModal<?php echo $row['id']; ?>"
+                                    aria-controls="drawer-update-product"
+                                    class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 -ml-0.5" viewbox="0 0 20 20" fill="currentColor"
+                                      aria-hidden="true">
+                                      <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                      <path fill-rule="evenodd"
+                                        d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                                        clip-rule="evenodd" />
+                                    </svg>
+                                    Edit
+                                  </button>
+                                      <a href="?delete=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this record?');" class="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
+                                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 -ml-0.5" viewbox="0 0 20 20" fill="currentColor"
+                                        aria-hidden="true">
+                                        <path fill-rule="evenodd"
+                                          d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                          clip-rule="evenodd" />
+                                      </svg>
+                                      Delete</a>
+                                      <!-- Tombol Preview -->
+                            <form action="" method="POST">
+                                <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                <input type="hidden" name="nip" value="<?php echo $row['nip']; ?>">
+                                <button
+                                    type="submit"
+                                    name="reset_password"
+                                    aria-controls="drawer-update-product"
+                                    class="py-2 px-3 flex items-center text-sm font-medium text-center rounded-lg text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 me-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800 "
+                                >
+                                    <svg class="h-4 w-4 mr-2 -ml-0.5" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 6V7.998H15V6H5ZM11.998 11V14H14.998V11H11.998ZM2 5.754C2 5.02465 2.28973 4.32518 2.80546 3.80945C3.32118 3.29373 4.02065 3.004 4.75 3.004H15.25C15.9792 3.004 16.6785 3.29359 17.1942 3.8091C17.7099 4.32461 17.9997 5.02383 18 5.753V14.253C18 14.9823 17.7103 15.6818 17.1945 16.1975C16.6788 16.7133 15.9793 17.003 15.25 17.003H4.75C4.02065 17.003 3.32118 16.7133 2.80546 16.1975C2.28973 15.6818 2 14.9823 2 14.253V5.754ZM4 5.5V8.498C4 8.63061 4.05268 8.75778 4.14645 8.85155C4.24021 8.94532 4.36739 8.998 4.5 8.998H15.5C15.6326 8.998 15.7598 8.94532 15.8536 8.85155C15.9473 8.75778 16 8.63061 16 8.498V5.5C16 5.36739 15.9473 5.24021 15.8536 5.14645C15.7598 5.05268 15.6326 5 15.5 5H4.5C4.36739 5 4.24021 5.05268 4.14645 5.14645C4.05268 5.24021 4 5.36739 4 5.5Z"></path>
+                                    </svg>
+                                    Reset Password
+                                </button>
+                            </form>
+                                    </div>
+                              </td>
+                          </tr>
+                          <!-- Modal Edit -->
+                          <div
+                            id="updateProductModal<?php echo $row['id']; ?>"
+                            tabindex="-1"
+                            aria-hidden="true"
+                            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
                           >
-                        </div>
-                      </td>
-                      <th
-                        scope="row"
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <div class="flex items-center mr-3">
-                          Jonathan Lilipory
-                        </div>
-                      </th>
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        197001262022211002
-                      </td>
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <span
-                          class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"
-                          >Guru</span
-                        >
-                      </td>
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        Laki-Laki
-                      </td>
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        Tanjungpinang, 26 Jan 1970
-                      </td>
+                            <div class="relative p-4 w-full max-w-2xl max-h-full">
+                              <!-- Modal content -->
+                              <div
+                                class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
+                              >
+                                <!-- Modal header -->
+                                <div
+                                  class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600"
+                                >
+                                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                    Update Data Tendik
+                                  </h3>
+                                  <button
+                                    type="button"
+                                    class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                    data-modal-toggle="updateProductModal<?php echo $row['id']; ?>"
+                                  >
+                                    <svg
+                                      aria-hidden="true"
+                                      class="w-5 h-5"
+                                      fill="currentColor"
+                                      viewbox="0 0 20 20"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        fill-rule="evenodd"
+                                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                        clip-rule="evenodd"
+                                      />
+                                    </svg>
+                                    <span class="sr-only">Close modal</span>
+                                  </button>
+                                </div>
+                                <!-- Modal body -->
+                                <form method="POST">
+                                  <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                                    <input type="hidden" name="id" value=<?php echo $row['id']?> class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Insert Nama" required>
+                                    <!-- ID Sekolah -->
+                                    <div>
+                                      <label for="id_sekolah" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">ID Sekolah</label>
+                                      <select name="id_sekolah" id="id_sekolah" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <?php 
+                                        $sql_sekolah = "SELECT id, nama FROM sekolah";
+                                        $result_sekolah = $koneksi->query($sql_sekolah);
+                                        while($sekolah = $result_sekolah->fetch_assoc()): ?>
+                                          <option value="<?php echo $sekolah['id']; ?>" <?php if (@$row['id_sekolah']  == $sekolah['id']) echo 'selected'; ?>><?php echo $sekolah['nama']; ?></option>
+                                        <?php endwhile; ?>
+                                      </select>
+                                    </div>
 
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <div class="flex items-center space-x-4">
-                          <button
-                            type="button"
-                            data-modal-target="updateProductModal"
-                            data-modal-toggle="updateProductModal"
-                            aria-controls="drawer-update-product"
-                            class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4 mr-2 -ml-0.5"
-                              viewbox="0 0 20 20"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path
-                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"
-                              />
-                              <path
-                                fill-rule="evenodd"
-                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            data-modal-target="deleteModal"
-                            data-modal-toggle="deleteModal"
-                            class="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4 mr-2 -ml-0.5"
-                              viewbox="0 0 20 20"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    <tr
-                      class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    >
-                      <td class="p-4 w-4">
-                        <div class="flex items-center">
-                          <input
-                            id="checkbox-table-search-1"
-                            type="checkbox"
-                            onclick="event.stopPropagation()"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          />
-                          <label for="checkbox-table-search-1" class="sr-only"
-                            >checkbox</label
-                          >
-                        </div>
-                      </td>
-                      <th
-                        scope="row"
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <div class="flex items-center mr-3">
-                          SULASMI, S.Pd., M.M.
-                        </div>
-                      </th>
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        196908121994122008
-                      </td>
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <span
-                          class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-green-900 dark:text-green-300"
-                          >Kepala Sekolah</span
-                        >
-                      </td>
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        Perempuan
-                      </td>
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        Tarempa, 12 Aug 1969
-                      </td>
+                                    <!-- Nama -->
+                                    <div>
+                                      <label for="nama" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
+                                      <input type="text" name="nama" id="nama" value=<?php echo $row['nama']?> class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Insert Nama" required>
+                                    </div>
 
-                      <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                      >
-                        <div class="flex items-center space-x-4">
-                          <button
-                            type="button"
-                            data-modal-target="updateProductModal"
-                            data-modal-toggle="updateProductModal"
-                            aria-controls="drawer-update-product"
-                            class="py-2 px-3 flex items-center text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4 mr-2 -ml-0.5"
-                              viewbox="0 0 20 20"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path
-                                d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"
-                              />
-                              <path
-                                fill-rule="evenodd"
-                                d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                            Edit
-                          </button>
-                          <button
-                            type="button"
-                            data-modal-target="deleteModal"
-                            data-modal-toggle="deleteModal"
-                            class="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              class="h-4 w-4 mr-2 -ml-0.5"
-                              viewbox="0 0 20 20"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                            Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
+                                    <!-- NIP -->
+                                    <div>
+                                      <label for="nip" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NIP</label>
+                                      <input type="text" name="nip" id="nip" value=<?php echo $row['nip']; ?> class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Insert NIP" required>
+                                    </div> 
+
+                                    <!-- Jenis Kelamin -->
+                                    <div>
+                                      <label for="jk" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jenis Kelamin</label>
+                                      <select name="jk" id="jk" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option value="L" <?php if ($row['jk']== 'L') echo 'selected'; ?>>Laki-laki</option>
+                                        <option value="P"  <?php if ($row['jk']== 'P') echo 'selected'; ?>>Perempuan</option>
+                                      </select>
+                                    </div>
+
+                                    <!-- Jabatan -->
+                                    <div>
+                                      <label for="jabatan" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jabatan</label>
+                                      <select name="jabatan" id="jabatan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option value="Kepsek" <?php if ($row['jabatan']== 'Kepsek') echo 'selected'; ?>>Kepsek</option>
+                                        <option value="Guru">Guru</option>
+                                      </select>
+                                    </div>
+
+                                    <!-- Pendidikan -->
+                                    <div>
+                                      <label for="pendidikan" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pendidikan</label>
+                                      <select name="pendidikan" id="pendidikan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                        <option value="SMAS/SMK" <?php if ($row['pendidikan']== 'SMAS/SMK') echo 'selected'; ?>>SMAS/SMK</option>
+                                        <option value="D1" <?php if ($row['pendidikan']== 'D1') echo 'selected'; ?>>D1</option>
+                                        <option value="D2" <?php if ($row['pendidikan']== 'D2') echo 'selected'; ?>>D2</option>
+                                        <option value="D3" <?php if ($row['pendidikan']== 'D3') echo 'selected'; ?>>D3</option>
+                                        <option value="D4" <?php if ($row['pendidikan']== 'D4') echo 'selected'; ?>>D4</option>
+                                        <option value="S1" <?php if ($row['pendidikan']== 'S1') echo 'selected'; ?>>S1</option>
+                                        <option value="S2" <?php if ($row['pendidikan']== 'S2') echo 'selected'; ?>>S2</option>
+                                        <option value="S3" <?php if ($row['pendidikan']== 'S3') echo 'selected'; ?>>S3</option>
+                                      </select>
+                                    </div>
+                                  </div>
+                                  <div class="flex items-center space-x-4">
+                                    <button
+                                      type="submit"
+                                      name="submit_edit"
+                                      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                    >
+                                      Update
+                                    </button>
+                                    </button>
+                                  </div>
+                                </form>
+                              </div>
+                            </div>
+                          </div>
+                      <?php endwhile; ?>
                   </tbody>
                 </table>
               </div>
@@ -1567,255 +895,87 @@
                 </button>
               </div>
               <!-- Modal body -->
-              <form action="#">
-                <div class="grid gap-4 mb-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      for="name"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Nama</label
-                    >
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Type product name"
-                      required=""
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="NIP"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >NIP</label
-                    >
-                    <input
-                      type="number"
-                      name="NIP"
-                      id="NIP"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert NIP"
-                      required=""
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="Jabatan"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Jabatan</label
-                    ><select
-                      id="Jabatan"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option selected="">Pilih Jenjang Jabatan</option>
-                      <option value="Guru">Guru</option>
-                      <option value="Kepala Sekolah">Kepala Sekolah</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      for="Akreditasi"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Akreditasi</label
-                    ><select
-                      id="Akreditasi"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option selected="">Pilih Akreditasi</option>
-                      <option value="A">A (Unggul)</option>
-                      <option value="B">B (Baik)</option>
-                      <option value="C">C (Cukup)</option>
-                      <option value="TT">TT (Tidak Terakreditasi)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      for="tahunBerdiri"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >TTL</label
-                    >
-                    <input
-                      type="text"
-                      name="tahunBerdiri"
-                      id="tahunBerdiri"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert TTL"
-                      required=""
-                    />
-                  </div>
+              <form method="POST" action="tendik.php">
+              <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                
+                <!-- ID Sekolah -->
+                <div>
+                  <label for="id_sekolah" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Sekolah</label>
+                  <select name="id_sekolah" id="id_sekolah" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="" >Pilih Sekolah</option>
+                    <?php 
+                    $sql_sekolah = "SELECT id, nama FROM sekolah";
+                    $result_sekolah = $koneksi->query($sql_sekolah);
+                    while($sekolah = $result_sekolah->fetch_assoc()): ?>
+                      <option value="<?php echo $sekolah['id']; ?>"><?php echo $sekolah['nama']; ?></option>
+                    <?php endwhile; ?>
+                  </select>
                 </div>
+
+                <!-- Nama -->
+                <div>
+                  <label for="nama" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
+                  <input type="text" name="nama" id="nama" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Insert Nama" required>
+                </div>
+
+                <!-- NIP -->
+                <div>
+                  <label for="nip" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">NIP</label>
+                  <input type="text" name="nip" id="nip" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Insert NIP" required>
+                </div>
+
+                <!-- Jenis Kelamin -->
+                <div>
+                  <label for="jk" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jenis Kelamin</label>
+                  <select name="jk" id="jk" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="L">Laki-laki</option>
+                    <option value="P">Perempuan</option>
+                  </select>
+                </div>
+
+                <!-- Jabatan -->
+                <div>
+                  <label for="jabatan" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jabatan</label>
+                  <select name="jabatan" id="jabatan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="Kepsek">Kepsek</option>
+                    <option value="Guru">Guru</option>
+                    <option value="Pengawas">Pengawas</option>
+                  </select>
+                </div>
+
+                <!-- Pendidikan -->
+                <div>
+                  <label for="pendidikan" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pendidikan</label>
+                  <select name="pendidikan" id="pendidikan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                    <option value="SMAS/SMK">SMAS/SMK</option>
+                    <option value="D1">D1</option>
+                    <option value="D2">D2</option>
+                    <option value="D3">D3</option>
+                    <option value="D4">D4</option>
+                    <option value="S1">S1</option>
+                    <option value="S2">S2</option>
+                    <option value="S3">S3</option>
+                  </select>
+                </div>
+              </div>
+              <div class="flex items-center space-x-4">
                 <button
-                  type="submit"
-                  class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                >
+                  type="submit" name="submit_add"
+                  class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
                   <svg
                     class="mr-1 -ml-1 w-6 h-6"
                     fill="currentColor"
                     viewbox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+                    xmlns="http://www.w3.org/2000/svg">
                     <path
                       fill-rule="evenodd"
                       d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-                      clip-rule="evenodd"
-                    />
+                      clip-rule="evenodd" />
                   </svg>
-                  Add new school
+                  Tambah
                 </button>
-              </form>
-            </div>
-          </div>
-        </div>
-        <!-- Update Modal -->
-        <div
-          id="updateProductModal"
-          tabindex="-1"
-          aria-hidden="true"
-          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
-        >
-          <div class="relative p-4 w-full max-w-2xl max-h-full">
-            <!-- Modal content -->
-            <div
-              class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
-            >
-              <!-- Modal header -->
-              <div
-                class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600"
-              >
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                  Update Product
-                </h3>
-                <button
-                  type="button"
-                  class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-                  data-modal-toggle="updateProductModal"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="w-5 h-5"
-                    fill="currentColor"
-                    viewbox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      fill-rule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clip-rule="evenodd"
-                    />
-                  </svg>
-                  <span class="sr-only">Close modal</span>
-                </button>
-              </div>
-              <!-- Modal body -->
-              <form action="#">
-                <div class="grid gap-4 mb-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      for="name"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Nama</label
-                    >
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Type product name"
-                      required=""
-                      value="Jonathan Lilipory"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="NIP"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >NIP</label
-                    >
-                    <input
-                      type="number"
-                      name="NIP"
-                      id="NIP"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert NIP"
-                      required=""
-                      value="197001262022211002"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      for="Jabatan"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Jabatan</label
-                    ><select
-                      id="Jabatan"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option>Pilih Jenjang Jabatan</option>
-                      <option value="Guru" selected="">Guru</option>
-                      <option value="Kepala Sekolah">Kepala Sekolah</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      for="Akreditasi"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >Akreditasi</label
-                    ><select
-                      id="Akreditasi"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                    >
-                      <option>Pilih Akreditasi</option>
-                      <option value="A" selected="">A (Unggul)</option>
-                      <option value="B">B (Baik)</option>
-                      <option value="C">C (Cukup)</option>
-                      <option value="TT">TT (Tidak Terakreditasi)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label
-                      for="tahunBerdiri"
-                      class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-                      >TTL</label
-                    >
-                    <input
-                      type="text"
-                      name="tahunBerdiri"
-                      id="tahunBerdiri"
-                      class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      placeholder="Insert TTL"
-                      required=""
-                      value="1999"
-                    />
-                  </div>
                 </div>
-                <div class="flex items-center space-x-4">
-                  <button
-                    type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                  >
-                    Update product
-                  </button>
-                  <button
-                    type="button"
-                    class="text-red-600 inline-flex items-center hover:text-white border border-red-600 hover:bg-red-600 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
-                  >
-                    <svg
-                      class="mr-1 -ml-1 w-5 h-5"
-                      fill="currentColor"
-                      viewbox="0 0 20 20"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                    Delete
-                  </button>
-                </div>
-              </form>
+            </form>
             </div>
           </div>
         </div>

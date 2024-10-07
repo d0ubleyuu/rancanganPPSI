@@ -1,3 +1,68 @@
+<?php
+// index.php
+
+// Include Koneksi.php
+require_once 'src/koneksi.php';
+
+// Initialize the error variable
+$error = '';
+
+// Check if form is submitted
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    // Check for default admin credentials
+    if ($email === 'admin@admin.disdindik.sch.id' && $password === '#Admin123') {
+        session_start();
+        $_SESSION['nama'] = 'Admin';
+        $_SESSION['jabatan'] = 'admin';
+        
+        header('Location: src/admin/dashboard.php');
+        exit;
+    }
+
+    // Query to retrieve user data
+    $query = "SELECT * FROM tendik WHERE email = ? AND password = ?";
+    $stmt = $koneksi->prepare($query);
+    $stmt->bind_param('ss', $email, $password);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        // User found, get name, jabatan, and set session
+        $user_data = $result->fetch_assoc();
+        $nama = $user_data['nama'];
+        $jabatan = $user_data['jabatan'];
+
+        session_start();
+        $_SESSION['nama'] = $nama;
+        $_SESSION['jabatan'] = $jabatan;
+
+        // Redirect to specific page based on jabatan
+        switch ($jabatan) {
+            case 'Kepsek':
+                header('Location: src/kepsek/dashboard.php');
+                break;
+            case 'Guru':
+                header('Location: src/guru/dashboard.php');
+                break;
+            case 'Pengawas':
+                header('Location: src/pengawas/dashboard.php');
+                break;
+            default:
+                $error = 'Invalid jabatan';
+        }
+        exit;
+    } else {
+        // User not found, display error message
+        $error = 'Email or password is incorrect';
+    }
+
+    $stmt->close();
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -10,6 +75,13 @@
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
     />
+    <script>
+      // Menghapus isi form saat halaman dimuat
+        window.onload = function() {
+        document.getElementById("email").value = '';
+        document.getElementById("password").value = '';
+      }
+    </script>
   </head>
   <body class="flex items-center h-screen">
     <!-- component -->
@@ -22,7 +94,10 @@
         <h1 class="text-2xl font-bold text-center mb-4 dark:text-gray-200">
           Welcome Back!
         </h1>
-        <form action="dashboard.php">
+        <?php if (isset($error)): ?>
+            <p class="text-red-500 text-center mb-4"><?= $error ?></p>
+        <?php endif; ?>
+        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="post">
           <div class="mb-4">
             <label
               for="email"
@@ -31,6 +106,7 @@
             >
             <input
               type="email"
+              name="email"
               id="email"
               class="shadow-sm rounded-md w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="your@email.com"
@@ -46,6 +122,7 @@
             <input
               type="password"
               id="password"
+              name="password"
               class="shadow-sm rounded-md w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="Enter your password"
               required
@@ -72,12 +149,13 @@
             </div>
           </div>
           <button
-            type="submit"
+            type="submit" name="login" value="Login"
             class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Login
           </button>
         </form>
+        <?php if (isset($error)) { echo $error; } ?>
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>

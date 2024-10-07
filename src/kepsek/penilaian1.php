@@ -1,17 +1,77 @@
+<?php
+include("../koneksi.php");
+
+// Fungsi untuk analisis mutu
+function analisisMutu($sesuai_jadwal, $metode_beragam, $berkelanjutan, $peningkataan) {
+  if ( $metode_beragam == 1 && $berkelanjutan == 1 && $peningkataan == 1) {
+      return 4;
+  } elseif ( $metode_beragam == 1 && $berkelanjutan == 0 && $peningkataan == 1) {
+      return 3;
+  } elseif ( $metode_beragam == 1 && $berkelanjutan == 0 && $peningkataan == 0) {
+      return 2;
+  } else {
+      return 1;
+  }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if ($_POST['simpan'] == "true") {
+    // Ambil nilai id_mapel dari POST
+    $id_document = $_POST['id_document'];
+    $id_mapel = $_POST['id_mapel'];
+    $id_kepsek = $_POST['id_kepsek'];
+    $doc_nilai = $_POST['doc_nilai'];
+    $remedial = $_POST['remedial'];
+    $sesuai_jadwal = $_POST['sesuai_jadwal'];
+    $metode_beragam = $_POST['metode_beragam'];
+    $berkelanjutan = $_POST['berkelanjutan'];
+    $peningkatan = $_POST['peningkatan'];
+    $waktu = date("Y-m-d H:i:s");
+    $mutu = analisisMutu($sesuai_jadwal, $metode_beragam, $berkelanjutan, $peningkatan);
+    echo "<script>alert('Hasil analisis mutu: " . $mutu . "');</script>";
+    
+    $query = "INSERT INTO `penilaian_mutu` VALUES ('','$id_document','$id_mapel','$id_kepsek','$waktu','$doc_nilai','$remedial','$sesuai_jadwal','$metode_beragam','$berkelanjutan','$peningkatan','$mutu')";
+    $simpan = mysqli_query($koneksi, $query);
+    $queryEdit = "UPDATE mapel SET mutu = '$mutu' WHERE mapel.id = 1";
+    $edit = mysqli_query($koneksi, $queryEdit);
+    if ($simpan && $edit)
+    {
+        echo "<script>
+        alert('Simpan data suksess!');
+        document.location='penilaian.php';
+          </script>";
+    } else {
+        echo "<script>
+        alert('Simpan data GAGAL!!');
+        document.location='penilaian.php';
+          </script>";
+    }
+  }else{
+    echo "<script>
+        document.location='penilaian.php';
+        </script>";
+  }
+}else{
+  echo "<script>
+      document.location='penilaian.php';
+      </script>";
+}
+
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="src\css\output.css" rel="stylesheet" />
+    <link href="..\css\output.css" rel="stylesheet" />
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
-    <link
+    <!-- <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
-    />
+    /> -->
   </head>
-  <body class="h-screen">
+  <body class="min-h-screen w-full">
     <nav
       class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
     >
@@ -117,15 +177,93 @@
       </div>
     </nav>
 
-    <div class="p-4 h-full">
+    <div class="p-1 md:p-2 w-full">
       <div
-        class="p-4 border-2 border-gray-200 border-dashed rounded-lg h-full dark:border-gray-700 mt-14"
+        class="p-2 md:p-4 border-2 border-gray-200 border-dashed rounded-lg h-full w-full dark:border-gray-700 mt-14"
       >
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4 h-full">
           <div
-            class="flex items-center justify-center rounded bg-gray-50 h-full dark:bg-gray-800"
+            class="flex items-center justify-start flex-col rounded bg-gray-50 h-full dark:bg-gray-800"
           >
-            <p
+            <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+              <?php
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                  // Ambil nilai id_mapel dari POST
+                  $id_mapel = $_POST['id_mapel'];
+                  $id_kepsek = $_POST['id_kepsek'];
+                  
+                  // Cetak nilai id_mapel
+                  $query = mysqli_query($koneksi, "SELECT * from document WHERE id_mapel='$id_mapel'");
+                  $jumlah_data = mysqli_num_rows($query);
+                  foreach ($query as $row) {
+                    $id_document = $row['id'];
+                  
+                
+              ?>
+              <ul
+                class="flex flex-wrap -mb-px text-sm font-medium text-center"
+                id="default-styled-tab"
+                data-tabs-toggle="#default-styled-tab-content"
+                data-tabs-active-classes="text-blue-600 hover:text-blue-600 dark:text-blue-500 dark:hover:text-blue-500 border-blue-600 dark:border-blue-500"
+                data-tabs-inactive-classes="dark:border-transparent text-gray-500 hover:text-gray-600 dark:text-gray-400 border-gray-100 hover:border-gray-300 dark:border-gray-700 dark:hover:text-gray-300"
+                role="tablist"
+              >
+                <li class="me-2" role="presentation">
+                  <button
+                    class="inline-block p-4 border-b-2 rounded-t-lg"
+                    id="profile-styled-tab"
+                    data-tabs-target="#styled-profile"
+                    type="button"
+                    role="tab"
+                    aria-controls="profile"
+                    aria-selected="false"
+                  >
+                    Doc. Penilaian
+                  </button>
+                </li>
+                <li class="me-2" role="presentation">
+                  <button
+                    class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+                    id="dashboard-styled-tab"
+                    data-tabs-target="#styled-dashboard"
+                    type="button"
+                    role="tab"
+                    aria-controls="dashboard"
+                    aria-selected="false"
+                  >
+                    Doc. Remedial
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <div id="default-styled-tab-content" class="w-full h-full">
+              <div
+                class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+                id="styled-profile"
+                role="tabpanel"
+                aria-labelledby="profile-tab"
+              >
+                <iframe
+                  type="application/pdf"
+                  src="../document/penilaian/<?php echo $row['path_doc_nilai'];?>"
+                  class="w-full min-h-80 md:min-h-[32rem]"
+                ></iframe>
+              </div>
+              <div
+                class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+                id="styled-dashboard"
+                role="tabpanel"
+                aria-labelledby="dashboard-tab"
+              >
+                <iframe
+                  type="application/pdf"
+                  src="..\document\remedial\<?php echo $row['path_doc_remedial'];?>"
+                  class="w-full min-h-80 md:min-h-[32rem]"
+                ></iframe>
+              </div>
+            </div>
+
+            <!-- <p
               class="text-2xl text-gray-100 dark:text-gray-500 text-center flex flex-col items-center"
             >
               <svg
@@ -147,176 +285,562 @@
               </svg>
 
               PDF Document
-            </p>
+            </p> -->
           </div>
           <div
-            class="flex flex-col items-start justify-center rounded bg-gray-50 h-full dark:bg-gray-800"
+            class="flex flex-col items-start justify-start rounded bg-gray-50 h-full dark:bg-gray-800"
           >
-            <ol
-              class="flex items-center w-full p-3 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
-            >
-              <li class="flex items-center text-blue-600 dark:text-blue-500">
-                <span
-                  class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-blue-600 rounded-full shrink-0 dark:border-blue-500"
+            <form method="POST" action="" id="multiStepForm">
+              <input type="hidden" name="id_mapel" value=<?php echo $id_mapel?>>
+              <input type="hidden" name="id_document" value=<?php echo $id_document?>>
+              <input type="hidden" name="id_kepsek" value=<?php echo $id_kepsek;}}?>>
+              <div id="step-1" class="step-content">
+                <ol
+                  class="flex items-center w-full p-3 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
                 >
-                  1
-                </span>
-                Document Check
-                <svg
-                  class="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 12 10"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m7 9 4-4-4-4M1 9l4-4-4-4"
-                  />
-                </svg>
-              </li>
-              <li class="flex items-center">
-                <span
-                  class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400"
-                >
-                  2
-                </span>
-                Program Remedial Check
-                <svg
-                  class="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 12 10"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m7 9 4-4-4-4M1 9l4-4-4-4"
-                  />
-                </svg>
-              </li>
-              <li class="flex items-center">
-                <span
-                  class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400"
-                >
-                  3
-                </span>
-                Check Remedial Results
-              </li>
-            </ol>
-            <div
-              class="h-full mt-2 w-full px-3 py-6 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
-            >
-              <form action="penilaian2.php">
-                <div class="mb-4">
-                  <h3
-                    class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
+                  <li
+                    class="flex items-center text-blue-600 dark:text-blue-500"
                   >
-                    Apakah ada Dokumen Hasil Penilaian ?
-                  </h3>
-                  <ul class="grid w-full gap-6 md:grid-cols-2">
-                    <li>
-                      <input
-                        type="radio"
-                        id="hosting-small"
-                        name="hosting"
-                        value="hosting-small"
-                        class="hidden peer"
-                        required
+                    <span
+                      class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-blue-600 rounded-full shrink-0 dark:border-blue-500"
+                    >
+                      1
+                    </span>
+                    Document Check
+                    <svg
+                      class="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 12 10"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m7 9 4-4-4-4M1 9l4-4-4-4"
                       />
-                      <label
-                        for="hosting-small"
-                        class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-                      >
-                        <div class="block">
-                          <div class="w-full text-lg font-semibold">Yes</div>
-                        </div>
-                      </label>
-                    </li>
-                    <li>
-                      <input
-                        type="radio"
-                        id="hosting-big"
-                        name="hosting"
-                        value="hosting-big"
-                        class="hidden peer"
+                    </svg>
+                  </li>
+                  <li class="flex items-center">
+                    <span
+                      class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400"
+                    >
+                      2
+                    </span>
+                    Program Remedial Check
+                    <svg
+                      class="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 12 10"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m7 9 4-4-4-4M1 9l4-4-4-4"
                       />
-                      <label
-                        for="hosting-big"
-                        class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-                      >
-                        <div class="block">
-                          <div class="w-full text-lg font-semibold">No</div>
-                        </div>
-                      </label>
-                    </li>
-                  </ul>
+                    </svg>
+                  </li>
+                  <li class="flex items-center">
+                    <span
+                      class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400"
+                    >
+                      3
+                    </span>
+                    Check Remedial Results
+                  </li>
+                </ol>
+                <div
+                  class="h-full mt-2 w-full px-3 py-6 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
+                >
+                  <div class="mb-4">
+                    <h3
+                      class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
+                    >
+                      Apakah ada Dokumen Hasil Penilaian ?
+                    </h3>
+                    <ul class="grid w-full gap-6 md:grid-cols-2">
+                      <li>
+                        <input
+                          type="radio"
+                          id="doc_nilai1"
+                          name="doc_nilai"
+                          value="1"
+                          class="hidden peer"
+                          required
+                        />
+                        <label
+                          for="doc_nilai1"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">Yes</div>
+                          </div>
+                        </label>
+                      </li>
+                      <li>
+                        <input
+                          type="radio"
+                          id="doc_nilai0"
+                          name="doc_nilai"
+                          value="0"
+                          class="hidden peer"
+                        />
+                        <label
+                          for="doc_nilai0"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">No</div>
+                          </div>
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <div class="mb-8">
+                    <h3
+                      class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
+                    >
+                      Apakah ada Dokumen Hasil Program Remedial dan Pengayaan ?
+                    </h3>
+                    <ul class="grid w-full gap-6 md:grid-cols-2">
+                      <li>
+                        <input
+                          type="radio"
+                          id="doc_remedial1"
+                          name="remedial"
+                          value="1"
+                          class="hidden peer"
+                          required
+                        />
+                        <label
+                          for="doc_remedial1"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">Yes</div>
+                          </div>
+                        </label>
+                      </li>
+                      <li>
+                        <input
+                          type="radio"
+                          id="doc_remedial0"
+                          name="remedial"
+                          value="0"
+                          class="hidden peer"
+                        />
+                        <label
+                          for="doc_remedial0"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">No</div>
+                          </div>
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="text-right">
+                    <button
+                      type="button"
+                      onclick="nextStep()"
+                      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    >
+                      Selanjutnya
+                    </button>
+                  </div>
                 </div>
-                <div class="mb-8">
-                  <h3
-                    class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
+              </div>
+              <div id="step-2" class="step-content hidden">
+                <ol
+                  class="flex items-center w-full p-3 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
+                >
+                  <li
+                    class="flex items-center text-green-600 dark:text-green-500"
                   >
-                    Apakah ada Dokumen Hasil Penilaian ?
-                  </h3>
-                  <ul class="grid w-full gap-6 md:grid-cols-2">
-                    <li>
-                      <input
-                        type="radio"
-                        id="docremedilYes"
-                        name="remedial"
-                        value="docremedilYes"
-                        class="hidden peer"
-                        required
+                    <span
+                      class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-green-600 rounded-full shrink-0 dark:border-green-500"
+                    >
+                      1
+                    </span>
+                    Document Check
+                    <svg
+                      class="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 12 10"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m7 9 4-4-4-4M1 9l4-4-4-4"
                       />
-                      <label
-                        for="docremedilYes"
-                        class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-                      >
-                        <div class="block">
-                          <div class="w-full text-lg font-semibold">Yes</div>
-                        </div>
-                      </label>
-                    </li>
-                    <li>
-                      <input
-                        type="radio"
-                        id="docremedilNo"
-                        name="remedial"
-                        value="docremedilNp"
-                        class="hidden peer"
-                      />
-                      <label
-                        for="docremedilNo"
-                        class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
-                      >
-                        <div class="block">
-                          <div class="w-full text-lg font-semibold">No</div>
-                        </div>
-                      </label>
-                    </li>
-                  </ul>
-                </div>
-                <div class="text-right">
-                  <button
-                    type="submit"
-                    class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    </svg>
+                  </li>
+                  <li
+                    class="flex items-center text-blue-600 dark:text-blue-500"
                   >
-                    Selanjutnya
-                  </button>
+                    <span
+                      class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-blue-600 rounded-full shrink-0 dark:border-blue-500"
+                    >
+                      2
+                    </span>
+                    Program Remedial Check
+                    <svg
+                      class="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 12 10"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m7 9 4-4-4-4M1 9l4-4-4-4"
+                      />
+                    </svg>
+                  </li>
+                  <li class="flex items-center">
+                    <span
+                      class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-gray-500 rounded-full shrink-0 dark:border-gray-400"
+                    >
+                      3
+                    </span>
+                    Check Remedial Results
+                  </li>
+                </ol>
+                <div
+                  class="h-full mt-2 w-full px-3 py-6 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
+                >
+                  <div class="mb-4">
+                    <h3
+                      class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
+                    >
+                      Apakah Program dilakukan Sesuai dengan Jadwal?
+                    </h3>
+                    <ul class="grid w-full gap-6 md:grid-cols-2">
+                      <li>
+                        <input
+                          type="radio"
+                          id="sesuai_jadwal1"
+                          name="sesuai_jadwal"
+                          value="1"
+                          class="hidden peer"
+                          required
+                        />
+                        <label
+                          for="sesuai_jadwal1"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">Yes</div>
+                          </div>
+                        </label>
+                      </li>
+                      <li>
+                        <input
+                          type="radio"
+                          id="sesuai_jadwal0"
+                          name="sesuai_jadwal"
+                          value="0"
+                          class="hidden peer"
+                        />
+                        <label
+                          for="sesuai_jadwal0"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">No</div>
+                          </div>
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="mb-8">
+                    <h3
+                      class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
+                    >
+                      Apakah Program dilakukan dengan Metode yang Beragam ?
+                    </h3>
+                    <ul class="grid w-full gap-6 md:grid-cols-2">
+                      <li>
+                        <input
+                          type="radio"
+                          id="metode_beragam1"
+                          name="metode_beragam"
+                          value="1"
+                          class="hidden peer"
+                          required
+                        />
+                        <label
+                          for="metode_beragam1"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">Yes</div>
+                          </div>
+                        </label>
+                      </li>
+                      <li>
+                        <input
+                          type="radio"
+                          id="metode_beragam0"
+                          name="metode_beragam"
+                          value="0"
+                          class="hidden peer"
+                        />
+                        <label
+                          for="metode_beragam0"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">No</div>
+                          </div>
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="mb-8">
+                    <h3
+                      class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
+                    >
+                      Apakah Program dilakukan Secara Berkelanjutan ?
+                    </h3>
+                    <ul class="grid w-full gap-6 md:grid-cols-2">
+                      <li>
+                        <input
+                          type="radio"
+                          id="berkelanjutan1"
+                          name="berkelanjutan"
+                          value="1"
+                          class="hidden peer"
+                          required
+                        />
+                        <label
+                          for="berkelanjutan1"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">Yes</div>
+                          </div>
+                        </label>
+                      </li>
+                      <li>
+                        <input
+                          type="radio"
+                          id="berkelanjutan0"
+                          name="berkelanjutan"
+                          value="0"
+                          class="hidden peer"
+                        />
+                        <label
+                          for="berkelanjutan0"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">No</div>
+                          </div>
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="text-right">
+                    <button
+                      type="button"
+                      onclick="prevStep()"
+                      class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+                    >
+                      Sebelum
+                    </button>
+                    <button
+                      type="button"
+                      onclick="nextStep()"
+                      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    >
+                      Selanjutnya
+                    </button>
+                  </div>
                 </div>
-              </form>
-            </div>
+              </div>
+              <div id="step-3" class="step-content hidden">
+                <ol
+                  class="flex items-center w-full p-3 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
+                >
+                  <li
+                    class="flex items-center text-green-600 dark:text-green-500"
+                  >
+                    <span
+                      class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-green-600 rounded-full shrink-0 dark:border-green-500"
+                    >
+                      1
+                    </span>
+                    Document Check
+                    <svg
+                      class="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 12 10"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m7 9 4-4-4-4M1 9l4-4-4-4"
+                      />
+                    </svg>
+                  </li>
+                  <li
+                    class="flex items-center text-green-600 dark:text-green-500"
+                  >
+                    <span
+                      class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-green-600 rounded-full shrink-0 dark:border-green-500"
+                    >
+                      2
+                    </span>
+                    Program Remedial Check
+                    <svg
+                      class="w-3 h-3 ms-2 sm:ms-4 rtl:rotate-180"
+                      aria-hidden="true"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 12 10"
+                    >
+                      <path
+                        stroke="currentColor"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m7 9 4-4-4-4M1 9l4-4-4-4"
+                      />
+                    </svg>
+                  </li>
+                  <li
+                    class="flex items-center text-blue-600 dark:text-blue-500"
+                  >
+                    <span
+                      class="flex items-center justify-center w-5 h-5 me-2 text-xs border border-blue-600 rounded-full shrink-0 dark:border-blue-500"
+                    >
+                      3
+                    </span>
+                    Check Remedial Results
+                  </li>
+                </ol>
+                <div
+                  class="h-full mt-2 w-full px-3 py-6 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"
+                >
+                  <div class="mb-8">
+                    <h3
+                      class="mb-5 text-lg font-medium text-gray-900 dark:text-white"
+                    >
+                      Apakah Hasil Program Mengalami Peningkatan Nilai ?
+                    </h3>
+                    <ul class="grid w-full gap-6 md:grid-cols-2">
+                      <li>
+                        <input
+                          type="radio"
+                          id="peningkatan1"
+                          name="peningkatan"
+                          value="1"
+                          class="hidden peer"
+                          required
+                        />
+                        <label
+                          for="peningkatan1"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">Yes</div>
+                          </div>
+                        </label>
+                      </li>
+                      <li>
+                        <input
+                          type="radio"
+                          id="peningkatan0"
+                          name="peningkatan"
+                          value="0"
+                          class="hidden peer"
+                        />
+                        <label
+                          for="peningkatan0"
+                          class="inline-flex items-center justify-between w-full p-5 text-gray-500 bg-white border border-gray-200 rounded-lg cursor-pointer dark:hover:text-gray-300 dark:border-gray-700 dark:peer-checked:text-blue-500 peer-checked:border-blue-600 peer-checked:text-blue-600 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:bg-gray-800 dark:hover:bg-gray-700"
+                        >
+                          <div class="block">
+                            <div class="w-full text-lg font-semibold">No</div>
+                          </div>
+                        </label>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="text-right">
+                    <button
+                      type="button"
+                      onclick="prevStep()"
+                      class="text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800"
+                    >
+                      Sebelum
+                    </button>
+                    <button
+                      type="submit"
+                      name="simpan"
+                      value="true"
+                      class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-6 py-3 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800"
+                    >
+                      Submit
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+            <!-- End -->
           </div>
         </div>
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+    <script>
+      let currentStep = 1;
+
+      function showStep(step) {
+        document.querySelectorAll(".step-content").forEach((content, index) => {
+          content.classList.toggle("hidden", index + 1 !== step);
+        });
+        currentStep = step;
+        updateStepper();
+      }
+
+      function nextStep() {
+        if (currentStep < 3) showStep(currentStep + 1);
+      }
+
+      function prevStep() {
+        if (currentStep > 1) showStep(currentStep - 1);
+      }
+
+      function updateStepper() {
+        document
+          .querySelectorAll("#stepper .step button")
+          .forEach((btn, index) => {
+            btn.classList.toggle("text-blue-500", index + 1 === currentStep);
+            btn.classList.toggle("text-gray-500", index + 1 !== currentStep);
+          });
+      }
+      showStep(1); // Start with step 1
+    </script>
   </body>
 </html>

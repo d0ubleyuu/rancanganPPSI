@@ -1,18 +1,33 @@
 <?php
 include '../koneksi.php'; // Menghubungkan ke database
 
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['id'])) {
+  header('Location: ../../index.php');
+  exit;
+} else {
+  if ($_SESSION['jabatan'] !== 'admin') {
+    header('Location: ../../index.php');
+  exit;
+  }
+}
+ 
+
 // Ambil data dari form
 $id = $_POST['id'];
 $nama_mapel = $_POST['name'];
 $kode_mapel = $_POST['kode'];
 $id_guru = $_POST['guru'];
 $kkm = $_POST['kkm'];
-$mutu = $_POST['mutu'];
+$kelas = $_POST['angkatan'].' '.$_POST['kelas'];
+$ta = $_POST['ta'];
 
 // Query untuk memperbarui data
-$sql = "UPDATE mapel SET id_guru=?, kode_mapel=?, nama=?, kkm=?, mutu=? WHERE id=?";
+$sql = "UPDATE mapel SET id_guru=?, kode_mapel=?, nama=?, kkm=?, kelas=?, ta=? WHERE id=?";
 $stmt = mysqli_prepare($koneksi, $sql);
-mysqli_stmt_bind_param($stmt, "sssiii", $id_guru, $kode_mapel, $nama_mapel, $kkm, $mutu, $id);
+mysqli_stmt_bind_param($stmt, "sssissi", $id_guru, $kode_mapel, $nama_mapel, $kkm, $kelas, $ta, $id);
 mysqli_stmt_execute($stmt);
 
 // Cek apakah data berhasil diupdate

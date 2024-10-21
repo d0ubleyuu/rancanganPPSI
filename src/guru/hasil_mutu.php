@@ -1,5 +1,17 @@
 <?php
 include("../koneksi.php");
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['id'])) {
+  header('Location: ../../index.php');
+  exit;
+} else {
+  if ($_SESSION['jabatan'] !== 'Guru') {
+    header('Location: ../../index.php');
+  exit;
+  }
+}
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   // Ambil nilai id_mapel dari POST
@@ -17,6 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     mapel.kode_mapel AS kode_mapel,
     mapel.nama AS nama_mapel,
     mapel.kkm AS kkm,
+    mapel.kelas AS kelas,
+    mapel.ta AS ta,
     mapel.id_guru AS id_pengajar,
     tendik.nama AS nama_penilai,
     tendik.nip AS nip_penilai,
@@ -32,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     penilaian_mutu.peningkatan AS peningkatan
   FROM penilaian_mutu
   JOIN mapel ON penilaian_mutu.id_mapel = mapel.id
-  JOIN tendik ON mapel.id_guru = tendik.id
+  JOIN tendik ON penilaian_mutu.id_kepsek = tendik.id
   JOIN sekolah ON tendik.id_sekolah = sekolah.id
   JOIN document ON penilaian_mutu.id_doc = document.id
   WHERE penilaian_mutu.id = '$id_penilaian';");
@@ -128,7 +142,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <ul class="py-1" role="none">
                   <li>
                     <a
-                      href="#"
+                      href="dashboard.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Dashboard</a
@@ -144,7 +158,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="../../index.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Sign out</a
@@ -250,8 +264,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <div id="contact-details" class="space-y-2 text-gray-900 dark:text-white font-medium leading-loose">
                       <?php echo $row['kode_mapel'];?> <br />
                       <?php echo $row['nama_mapel'];?> <br />
-                      ??? <br />
-                      ??? <br />
+                      <?php echo $row['kelas'];?> <br />
+                      <?php echo $row['ta'];?> <br />
                       <?php echo $row['kkm'];?> 
                   </div>
                   </div>
@@ -328,8 +342,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
                 <div id="contact-details" class="space-y-2 text-gray-900 dark:text-white font-medium leading-loose">
                     <?php echo $row['waktu'];?> <br />
-                    <a href="../document/penilaian/<?php echo $row['doc_nilai'];?>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Download</a>  <br />
-                    <a href="../document/remedial/<?php echo $row['doc_remedial'];?>" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Download</a>  <br />
+                    <a href="../document/penilaian/<?php echo $row['doc_nilai'];?>" target="_blank" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Download</a>  <br />
+                    <a href="../document/remedial/<?php echo $row['doc_remedial'];?>" target="_blank" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Download</a>  <br />
                     <?php echo $row['sesuai_jadwal'];?>  <br />
                     <?php echo $row['metode_beragam'];?>  <br />
                     <?php echo $row['berkelanjutan'];?>  <br />

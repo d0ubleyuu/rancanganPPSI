@@ -1,3 +1,20 @@
+<?php
+
+// Include Koneksi.php
+require_once '../koneksi.php';
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['id'])) {
+  header('Location: ../../index.php');
+  exit;
+} else {
+  if ($_SESSION['jabatan'] !== 'admin') {
+    header('Location: ../../index.php');
+  exit;
+  }
+}
+?>
 <!DOCTYPE html>
 <html>
   <head>
@@ -75,19 +92,19 @@
               >
                 <div class="px-4 py-3" role="none">
                   <p class="text-sm text-gray-900 dark:text-white" role="none">
-                    Admin
+                    <?php $nama = ucwords($_SESSION['nama']); echo $nama; ?>
                   </p>
                   <p
                     class="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
                     role="none"
                   >
-                    admin@dindikbud.riau.gov.id
+                    <?=$_SESSION['email']?>
                   </p>
                 </div>
                 <ul class="py-1" role="none">
                   <li>
                     <a
-                      href="#"
+                      href="dashboard.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Dashboard</a
@@ -103,7 +120,7 @@
                   </li>
                   <li>
                     <a
-                      href="login.php"
+                      href="../../index.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Sign out</a
@@ -216,6 +233,9 @@
       <div
         class="p-4 border-2 border-gray-200 border-dashed rounded-lg dark:border-gray-700 mt-14 mb-4"
       >
+        <div>
+          <h2 class="mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">Welcome <?=$_SESSION['nama']?>!</h2>
+        </div>
         <div class="grid grid-cols-2 gap-4 mb-4">
           <div
             class="flex items-center justify-center h-24 rounded bg-gray-50 dark:bg-gray-800"

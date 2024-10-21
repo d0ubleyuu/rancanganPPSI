@@ -1,5 +1,18 @@
 <?php
 include '../koneksi.php';
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['id'])) {
+    header('Location: ../../index.php');
+    exit;
+  } else {
+    if ($_SESSION['jabatan'] !== 'Guru') {
+      header('Location: ../../index.php');
+    exit;
+    }
+  }
+
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Ambil informasi file penilaian
     $id = $_POST['id'];

@@ -1,6 +1,18 @@
 <?php
 include '../koneksi.php'; // Menginclude file koneksi.php
 
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['id'])) {
+  header('Location: ../../index.php');
+  exit;
+} else {
+  if ($_SESSION['jabatan'] !== 'admin') {
+    header('Location: ../../index.php');
+  exit;
+  }
+}
 // Ambil ID dari parameter GET
 $id = $_GET['id'];
 

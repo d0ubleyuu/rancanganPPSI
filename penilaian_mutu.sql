@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 07 Okt 2024 pada 03.46
+-- Waktu pembuatan: 08 Okt 2024 pada 11.10
 -- Versi server: 10.4.27-MariaDB
 -- Versi PHP: 8.2.0
 
@@ -40,8 +40,7 @@ CREATE TABLE `document` (
 --
 
 INSERT INTO `document` (`id`, `id_mapel`, `waktu`, `path_doc_nilai`, `path_doc_remedial`) VALUES
-(1, 1, '2024-10-05 04:06:01', 'penilaian_informatika.pdf', 'remedial_informatik.pdf'),
-(8, 4, '2024-10-06 16:40:52', 'MSI2101_Basis Data_Febri Putri_2024-10-06_Catatan_Penilaian.pdf', 'MSI2101_Basis Data_Febri Putri_2024-10-06_Laporan_Remedial.pdf');
+(10, 6, '2024-10-08 08:43:59', 'MTK0124_Matematika_Eka Agus_2024-10-08_Catatan_Penilaian.pdf', 'MTK0124_Matematika_Eka Agus_2024-10-08_Laporan_Remedial.pdf');
 
 -- --------------------------------------------------------
 
@@ -63,8 +62,8 @@ CREATE TABLE `mapel` (
 --
 
 INSERT INTO `mapel` (`id`, `id_guru`, `kode_mapel`, `nama`, `kkm`, `mutu`) VALUES
-(1, 2, 'TIK001', 'Informatika', 75, 4),
-(4, 3, 'MSI2101', 'Basis Data', 80, NULL);
+(6, 2, 'MTK0124', 'Matematika', 80, 1),
+(7, 3, 'BIN0224', 'Bahasa Indonesia', 80, 0);
 
 -- --------------------------------------------------------
 
@@ -92,7 +91,7 @@ CREATE TABLE `penilaian_mutu` (
 --
 
 INSERT INTO `penilaian_mutu` (`id`, `id_doc`, `id_mapel`, `id_kepsek`, `waktu`, `doc_nilai`, `doc_remedial`, `sesuai_jadwal`, `metode_beragam`, `berkelanjutan`, `peningkatan`, `mutu`) VALUES
-(3, 1, 1, 1, '2024-10-06 03:22:50', 1, 1, 1, 1, 1, 1, 4);
+(1, 10, 6, 1, '2024-10-08 03:49:43', 1, 1, 1, 0, 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -114,9 +113,7 @@ CREATE TABLE `sekolah` (
 --
 
 INSERT INTO `sekolah` (`id`, `npsm`, `nama`, `status`, `bp`, `akreditasi`) VALUES
-(1, 10403968, 'SMP NEGERI 13 PEKANBARU', 'Negeri', 'SMP', 'A'),
-(3, 10404376, ' SD DHARMA LOKA', 'Swasta', 'SD', 'A'),
-(4, 10495040, ' SD IT BINTANG CENDEKIA', 'Swasta', 'SD', 'B');
+(1, 10404099, 'SD NEGERI 71 PEKANBARU', 'Negeri', 'SD', 'A');
 
 -- --------------------------------------------------------
 
@@ -141,9 +138,10 @@ CREATE TABLE `tendik` (
 --
 
 INSERT INTO `tendik` (`id`, `id_sekolah`, `nama`, `nip`, `jk`, `jabatan`, `pendidikan`, `email`, `password`) VALUES
-(1, 1, 'Muhammad', 2596414538113106, 'L', 'Kepsek', 'S2', 'muhammad3106@kepsek.disdindik.sch.id', '38113106'),
-(2, 1, 'Jonathan', 2824263437853327, 'L', 'Guru', 'S1', 'jonathan3327@guru.disdindik.sch.id', '37853327'),
-(3, 1, 'Febri Putri', 552641401216153813, 'P', 'Pengawas', 'D4', 'febri.putri3813@pengawas.disdindik.sch.id', '16153813');
+(1, 1, 'Guntur Kusuma', 865005081949503165, 'L', 'Kepsek', 'S2', 'guntur.kusuma3165@kepsek.disdindik.sch.id', '49503165'),
+(2, 1, 'Eka Agus', 330436108285289894, 'P', 'Guru', 'S1', 'eka.agus9894@guru.disdindik.sch.id', '85289894'),
+(3, 1, 'Slamet Surya', 434494102038685570, 'L', 'Guru', 'D4', 'slamet.surya5570@guru.disdindik.sch.id', '38685570'),
+(5, 1, 'Ade Qolbi', 848306578522463391, 'P', 'Pengawas', 'S1', 'ade.qolbi3391@pengawas.disdindik.sch.id', '22463391');
 
 --
 -- Indexes for dumped tables
@@ -193,31 +191,31 @@ ALTER TABLE `tendik`
 -- AUTO_INCREMENT untuk tabel `document`
 --
 ALTER TABLE `document`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT untuk tabel `mapel`
 --
 ALTER TABLE `mapel`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `penilaian_mutu`
 --
 ALTER TABLE `penilaian_mutu`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `sekolah`
 --
 ALTER TABLE `sekolah`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT untuk tabel `tendik`
 --
 ALTER TABLE `tendik`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)

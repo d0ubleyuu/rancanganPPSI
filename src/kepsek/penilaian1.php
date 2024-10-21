@@ -1,5 +1,18 @@
 <?php
 include("../koneksi.php");
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['id'])) {
+  header('Location: ../../index.php');
+  exit;
+} else {
+  if ($_SESSION['jabatan'] !== 'Kepsek') {
+    header('Location: ../../index.php');
+  exit;
+  }
+}
+
 
 // Fungsi untuk analisis mutu
 function analisisMutu($sesuai_jadwal, $metode_beragam, $berkelanjutan, $peningkataan) {
@@ -15,7 +28,7 @@ function analisisMutu($sesuai_jadwal, $metode_beragam, $berkelanjutan, $peningka
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if ($_POST['simpan'] == "true") {
+  if ($_POST['simpan']) {
     // Ambil nilai id_mapel dari POST
     $id_document = $_POST['id_document'];
     $id_mapel = $_POST['id_mapel'];
@@ -32,7 +45,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     $query = "INSERT INTO `penilaian_mutu` VALUES ('','$id_document','$id_mapel','$id_kepsek','$waktu','$doc_nilai','$remedial','$sesuai_jadwal','$metode_beragam','$berkelanjutan','$peningkatan','$mutu')";
     $simpan = mysqli_query($koneksi, $query);
-    $queryEdit = "UPDATE mapel SET mutu = '$mutu' WHERE mapel.id = 1";
+    $queryEdit = "UPDATE mapel SET mutu = '$mutu' WHERE mapel.id = $id_mapel";
     $edit = mysqli_query($koneksi, $queryEdit);
     if ($simpan && $edit)
     {
@@ -46,10 +59,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         document.location='penilaian.php';
           </script>";
     }
-  }else{
+  } else if ($_POST['btn-menilai']==''){
+
+  } else {
     echo "<script>
-        document.location='penilaian.php';
-        </script>";
+      document.location='penilaian.php';
+      </script>";
   }
 }else{
   echo "<script>
@@ -66,10 +81,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="..\css\output.css" rel="stylesheet" />
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
-    <!-- <link
+    <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
-    /> -->
+    />
   </head>
   <body class="min-h-screen w-full">
     <nav
@@ -147,7 +162,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <ul class="py-1" role="none">
                   <li>
                     <a
-                      href="#"
+                      href=".dashboard.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Dashboard</a
@@ -163,7 +178,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   </li>
                   <li>
                     <a
-                      href="#"
+                      href="../../index.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Sign out</a
@@ -186,20 +201,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             class="flex items-center justify-start flex-col rounded bg-gray-50 h-full dark:bg-gray-800"
           >
             <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
-              <?php
-                if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                  // Ambil nilai id_mapel dari POST
-                  $id_mapel = $_POST['id_mapel'];
-                  $id_kepsek = $_POST['id_kepsek'];
-                  
-                  // Cetak nilai id_mapel
-                  $query = mysqli_query($koneksi, "SELECT * from document WHERE id_mapel='$id_mapel'");
-                  $jumlah_data = mysqli_num_rows($query);
-                  foreach ($query as $row) {
-                    $id_document = $row['id'];
-                  
-                
-              ?>
               <ul
                 class="flex flex-wrap -mb-px text-sm font-medium text-center"
                 id="default-styled-tab"
@@ -236,56 +237,112 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </li>
               </ul>
             </div>
-            <div id="default-styled-tab-content" class="w-full h-full">
+              <?php
+                if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                  // Ambil nilai id_mapel dari POST
+                  $id_mapel = $_POST['id_mapel'];
+                  $id_kepsek = $_POST['id_kepsek'];
+                  
+                  // Cetak nilai id_mapel
+                  $query = mysqli_query($koneksi, "SELECT * from document WHERE id_mapel = '$id_mapel'");
+                  $jumlah_data = mysqli_num_rows($query);
+                  if ($jumlah_data>0) {
+                    # code...
+                  
+                  foreach ($query as $row) {
+                    $id_document = $row['id'];
+                    $doc_nilai = $row['path_doc_nilai'];
+                    $doc_remedial = $row['path_doc_remedial'];
+                    echo"
+            <div id='default-styled-tab-content' class='w-full h-full'>
               <div
-                class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
-                id="styled-profile"
-                role="tabpanel"
-                aria-labelledby="profile-tab"
+                class='hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800'
+                id='styled-profile'
+                role='tabpanel'
+                aria-labelledby='profile-tab'
               >
                 <iframe
-                  type="application/pdf"
-                  src="../document/penilaian/<?php echo $row['path_doc_nilai'];?>"
-                  class="w-full min-h-80 md:min-h-[32rem]"
+                  type='application/pdf'
+                  src='../document/penilaian/$doc_nilai'
+                  class='w-full min-h-80 md:min-h-[32rem]'
                 ></iframe>
               </div>
               <div
-                class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
-                id="styled-dashboard"
-                role="tabpanel"
-                aria-labelledby="dashboard-tab"
+                class='hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800'
+                id='styled-dashboard'
+                role='tabpanel'
+                aria-labelledby='dashboard-tab'
               >
                 <iframe
-                  type="application/pdf"
-                  src="..\document\remedial\<?php echo $row['path_doc_remedial'];?>"
-                  class="w-full min-h-80 md:min-h-[32rem]"
+                  type='application/pdf'
+                  src='../document/remedial/$doc_remedial'
+                  class='w-full min-h-80 md:min-h-[32rem]'
                 ></iframe>
-              </div>
-            </div>
-
-            <!-- <p
-              class="text-2xl text-gray-100 dark:text-gray-500 text-center flex flex-col items-center"
+              </div>";
+             }} else {
+              $id_document = 0;
+              echo"
+              <div
+              class='hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800 h-full flex items-center justify-start'
+              id='styled-profile'
+              role='tabpanel'
+              aria-labelledby='profile-tab'
             >
-              <svg
-                class="w-8 h-8 mb-4 items-center"
-                viewBox="0 0 15 15"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M3.5 8H3V7H3.5C3.63261 7 3.75979 7.05268 3.85355 7.14645C3.94732 7.24021 4 7.36739 4 7.5C4 7.63261 3.94732 7.75979 3.85355 7.85355C3.75979 7.94732 3.63261 8 3.5 8ZM7 10V7H7.5C7.63261 7 7.75979 7.05268 7.85355 7.14645C7.94732 7.24021 8 7.36739 8 7.5V9.5C8 9.63261 7.94732 9.75979 7.85355 9.85355C7.75979 9.94732 7.63261 10 7.5 10H7Z"
-                  fill="#1a1a1a"
-                />
-                <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M1 1.5C1 1.10218 1.15804 0.720644 1.43934 0.43934C1.72064 0.158035 2.10218 0 2.5 0L10.707 0L14 3.293V13.5C14 13.8978 13.842 14.2794 13.5607 14.5607C13.2794 14.842 12.8978 15 12.5 15H2.5C2.10218 15 1.72064 14.842 1.43934 14.5607C1.15804 14.2794 1 13.8978 1 13.5V1.5ZM3.5 6H2V11H3V9H3.5C3.89782 9 4.27936 8.84196 4.56066 8.56066C4.84196 8.27936 5 7.89782 5 7.5C5 7.10218 4.84196 6.72064 4.56066 6.43934C4.27936 6.15804 3.89782 6 3.5 6ZM7.5 6H6V11H7.5C7.89782 11 8.27936 10.842 8.56066 10.5607C8.84196 10.2794 9 9.89782 9 9.5V7.5C9 7.10218 8.84196 6.72064 8.56066 6.43934C8.27936 6.15804 7.89782 6 7.5 6ZM10 11V6H13V7H11V8H12V9H11V11H10Z"
-                  fill="#1a1a1a"
-                />
-              </svg>
+                <p
+                  class='text-2xl text-gray-900 dark:text-gray-500 text-center flex flex-col items-center'
+                >
+                  <svg
+                    class='w-8 h-8 mb-4 items-center'
+                    viewBox='0 0 15 15'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M3.5 8H3V7H3.5C3.63261 7 3.75979 7.05268 3.85355 7.14645C3.94732 7.24021 4 7.36739 4 7.5C4 7.63261 3.94732 7.75979 3.85355 7.85355C3.75979 7.94732 3.63261 8 3.5 8ZM7 10V7H7.5C7.63261 7 7.75979 7.05268 7.85355 7.14645C7.94732 7.24021 8 7.36739 8 7.5V9.5C8 9.63261 7.94732 9.75979 7.85355 9.85355C7.75979 9.94732 7.63261 10 7.5 10H7Z'
+                      fill='#1a1a1a'
+                    />
+                    <path
+                      fill-rule='evenodd'
+                      clip-rule='evenodd'
+                      d='M1 1.5C1 1.10218 1.15804 0.720644 1.43934 0.43934C1.72064 0.158035 2.10218 0 2.5 0L10.707 0L14 3.293V13.5C14 13.8978 13.842 14.2794 13.5607 14.5607C13.2794 14.842 12.8978 15 12.5 15H2.5C2.10218 15 1.72064 14.842 1.43934 14.5607C1.15804 14.2794 1 13.8978 1 13.5V1.5ZM3.5 6H2V11H3V9H3.5C3.89782 9 4.27936 8.84196 4.56066 8.56066C4.84196 8.27936 5 7.89782 5 7.5C5 7.10218 4.84196 6.72064 4.56066 6.43934C4.27936 6.15804 3.89782 6 3.5 6ZM7.5 6H6V11H7.5C7.89782 11 8.27936 10.842 8.56066 10.5607C8.84196 10.2794 9 9.89782 9 9.5V7.5C9 7.10218 8.84196 6.72064 8.56066 6.43934C8.27936 6.15804 7.89782 6 7.5 6ZM10 11V6H13V7H11V8H12V9H11V11H10Z'
+                      fill='#1a1a1a'
+                    />
+                  </svg>
 
-              PDF Document
-            </p> -->
+                  Document Penilaian Tidak Tersedia
+                </p>
+              </div>
+              <div
+              class='hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800 h-full flex items-center justify-start'
+              id='styled-dashboard'
+              role='tabpanel'
+              aria-labelledby='dashboard-tab'
+            >
+                <p
+                  class='text-2xl text-gray-900 dark:text-gray-500 text-center flex flex-col items-center'
+                >
+                  <svg
+                    class='w-8 h-8 mb-4 items-center'
+                    viewBox='0 0 15 15'
+                    fill='none'
+                    xmlns='http://www.w3.org/2000/svg'
+                  >
+                    <path
+                      d='M3.5 8H3V7H3.5C3.63261 7 3.75979 7.05268 3.85355 7.14645C3.94732 7.24021 4 7.36739 4 7.5C4 7.63261 3.94732 7.75979 3.85355 7.85355C3.75979 7.94732 3.63261 8 3.5 8ZM7 10V7H7.5C7.63261 7 7.75979 7.05268 7.85355 7.14645C7.94732 7.24021 8 7.36739 8 7.5V9.5C8 9.63261 7.94732 9.75979 7.85355 9.85355C7.75979 9.94732 7.63261 10 7.5 10H7Z'
+                      fill='#1a1a1a'
+                    />
+                    <path
+                      fill-rule='evenodd'
+                      clip-rule='evenodd'
+                      d='M1 1.5C1 1.10218 1.15804 0.720644 1.43934 0.43934C1.72064 0.158035 2.10218 0 2.5 0L10.707 0L14 3.293V13.5C14 13.8978 13.842 14.2794 13.5607 14.5607C13.2794 14.842 12.8978 15 12.5 15H2.5C2.10218 15 1.72064 14.842 1.43934 14.5607C1.15804 14.2794 1 13.8978 1 13.5V1.5ZM3.5 6H2V11H3V9H3.5C3.89782 9 4.27936 8.84196 4.56066 8.56066C4.84196 8.27936 5 7.89782 5 7.5C5 7.10218 4.84196 6.72064 4.56066 6.43934C4.27936 6.15804 3.89782 6 3.5 6ZM7.5 6H6V11H7.5C7.89782 11 8.27936 10.842 8.56066 10.5607C8.84196 10.2794 9 9.89782 9 9.5V7.5C9 7.10218 8.84196 6.72064 8.56066 6.43934C8.27936 6.15804 7.89782 6 7.5 6ZM10 11V6H13V7H11V8H12V9H11V11H10Z'
+                      fill='#1a1a1a'
+                    />
+                  </svg>
+
+                  Document Remedial Tidak Tersedia
+                </p>
+              ";}?>
+            </div>
           </div>
           <div
             class="flex flex-col items-start justify-start rounded bg-gray-50 h-full dark:bg-gray-800"
@@ -293,7 +350,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <form method="POST" action="" id="multiStepForm">
               <input type="hidden" name="id_mapel" value=<?php echo $id_mapel?>>
               <input type="hidden" name="id_document" value=<?php echo $id_document?>>
-              <input type="hidden" name="id_kepsek" value=<?php echo $id_kepsek;}}?>>
+              <input type="hidden" name="id_kepsek" value=<?php echo $id_kepsek;}?>>
               <div id="step-1" class="step-content">
                 <ol
                   class="flex items-center w-full p-3 space-x-2 text-sm font-medium text-center text-gray-500 bg-white border border-gray-200 rounded-lg shadow-sm dark:text-gray-400 sm:text-base dark:bg-gray-800 dark:border-gray-700 sm:p-4 sm:space-x-4 rtl:space-x-reverse"

@@ -7,33 +7,14 @@ if (!isset($_SESSION['id'])) {
   header('Location: ../../index.php');
   exit;
 } else {
-  if ($_SESSION['jabatan'] !== 'Kepsek') {
+  if ($_SESSION['jabatan'] !== 'Pengawas') {
     header('Location: ../../index.php');
   exit;
   }
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset($_POST['new_password'])) {
-    $id = $_POST['id'];
-    $new_pass = $_POST['new_password'];
-    $queryEdit = "UPDATE tendik SET password = '$new_pass' WHERE tendik.id = $id";
-    $edit = mysqli_query($koneksi, $queryEdit);
-    if ($edit)
-    {
-        echo "<script>
-        alert('Ubah Password suksess!');
-        document.location='../../index.php';
-          </script>";
-    } else {
-        echo "<script>
-        alert('Ubah Password GAGAL!!');
-        document.location='../../index.php';
-          </script>";
-        }
-  } 
-
-  if(isset($_POST['id_penilaian'])) {
+  // Ambil nilai id_mapel dari POST
   $id_penilaian = $_POST['id_penilaian'];
   // echo $abc;
 
@@ -147,15 +128,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 class="z-50 hidden my-4 text-base list-none bg-white divide-y divide-gray-100 rounded shadow dark:bg-gray-700 dark:divide-gray-600"
                 id="dropdown-user"
               >
-              <div class="px-4 py-3" role="none">
+                <div class="px-4 py-3" role="none">
                   <p class="text-sm text-gray-900 dark:text-white" role="none">
-                    <?php $nama = ucwords($_SESSION['nama']); echo $nama; ?>
+                    Suarti
                   </p>
                   <p
                     class="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
                     role="none"
                   >
-                    <?=$_SESSION['email']?>
+                    suarti.smkn1@dindikbud.riau.gov.id
                   </p>
                 </div>
                 <ul class="py-1" role="none">
@@ -168,11 +149,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     >
                   </li>
                   <li>
-                    <button
-                      data-modal-target="authentication-modal" data-modal-toggle="authentication-modal"
-                      class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                    <a
+                      href="#"
+                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
-                      >Change Password</button
+                      >Change Password</a
                     >
                   </li>
                   <li>
@@ -186,58 +167,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </ul>
               </div>
             </div>
-            <!-- Change Password modal -->
-          <div id="authentication-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-              <div class="relative p-4 w-full max-w-md max-h-full">
-                  <!-- Modal content -->
-                  <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
-                      <!-- Modal header -->
-                      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
-                              Change Password
-                          </h3>
-                          <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal">
-                              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
-                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
-                              </svg>
-                              <span class="sr-only">Close modal</span>
-                          </button>
-                      </div>
-                      <!-- Modal body -->
-                      <div class="p-4 md:p-5">
-                      <form class="space-y-4" method="POST" onsubmit="return validatePassword()">
-                        <!-- Div untuk menampilkan pesan error -->
-                        <input type="hidden" name="pass_val" id="pass_val" value=<?=$_SESSION['password']?> />
-                        <input type="hidden" name="id" id="id" value=<?=$_SESSION['id']?> />
-                        <input type="hidden" name="id_penilaian" id="pass_val" value=<?=$_POST['id_penilaian']?> />
-                        <div id="error-message" class="hidden flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
-                            <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
-                            </svg>
-                            <span class="sr-only">Error</span>
-                            <div>
-                                <span class="font-medium" id="alert-title">Error!</span> <span id="alert-message"></span>
-                            </div>
-                        </div>
-                        <div>
-                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your old password</label>
-                            <input type="password" name="old_password" id="old_password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
-                        </div>
-                        <div>
-                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your new password</label>
-                            <input type="password" name="new_password" id="new_password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
-                        </div>
-                        <div>
-                            <label for="password" class="block  text-sm font-medium text-gray-900 dark:text-white">Confirm new password</label>
-                            <input type="password" name="confirm_password" id="confirm_password" placeholder="••••••••" class="bg-gray-50 mb-6 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
-                        </div>
-                        <button type="submit" nama="btn_change_pass" value="ubah" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Change Password</button>
-                        
-                      </form>
-                      </div>
-                  </div>
-              </div>
-          </div> 
           </div>
         </div>
       </div>
@@ -427,46 +356,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
     </div>
   </body>
-  <?php }}}
-  else {
+  <?php }}else {
   echo "<script>
         document.location='penilaian.php';
         </script>";
 }?>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.3.0/datepicker.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
-<script>
-function validatePassword() {
-    var oldPassword = document.getElementById("old_password").value; // Password lama dari input
-    var storedPassword = document.getElementById("pass_val").value; // Password lama dari sesi
-    var newPassword = document.getElementById("new_password").value; // Password baru
-    var confirmPassword = document.getElementById("confirm_password").value; // Konfirmasi password baru
-    var errorMessage = document.getElementById("error-message"); // Elemen untuk menampilkan pesan error
-    var alertMessage = document.getElementById("alert-message"); // Pesan kesalahan
-    var alertTitle = document.getElementById("alert-title"); // Judul pesan kesalahan
-
-    // Reset alert
-    alertMessage.textContent = "";
-    alertTitle.textContent = "Error!";
-    errorMessage.classList.add("hidden"); // Sembunyikan alert
-
-    // Validasi password lama
-    if (oldPassword !== storedPassword) {
-        alertMessage.textContent = "Old password is incorrect!"; // Tampilkan pesan kesalahan
-        errorMessage.classList.remove("hidden"); // Tampilkan alert
-        return false;  // Mencegah pengiriman form jika password lama tidak cocok
-    }
-
-    // Validasi password baru dan konfirmasi password
-    if (newPassword !== confirmPassword) {
-        alertMessage.textContent = "New password and confirmation password do not match!"; // Tampilkan pesan kesalahan
-        errorMessage.classList.remove("hidden"); // Tampilkan alert
-        return false;  // Mencegah pengiriman form jika password baru dan konfirmasi tidak cocok
-    }
-
-    // Jika semua validasi lulus
-    errorMessage.classList.add("hidden"); // Sembunyikan pesan kesalahan
-    return true;  // Mengizinkan form dikirim
-}
-</script>
 </html>

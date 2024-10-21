@@ -1,4 +1,17 @@
 <?php
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['id'])) {
+  header('Location: ../../index.php');
+  exit;
+} else {
+  if ($_SESSION['jabatan'] !== 'admin') {
+    header('Location: ../../index.php');
+  exit;
+  }
+}
+ 
 // Koneksi ke database
 $host = "localhost"; 
 $dbname = "penilaian_mutu"; 
@@ -83,7 +96,7 @@ if (isset($_POST['delete'])) {
     <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="src\css\output.css" rel="stylesheet" />
+    <link href="..\css\output.css" rel="stylesheet" />
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
@@ -154,19 +167,19 @@ if (isset($_POST['delete'])) {
               >
                 <div class="px-4 py-3" role="none">
                   <p class="text-sm text-gray-900 dark:text-white" role="none">
-                    Admin
+                    <?php $nama = ucwords($_SESSION['nama']); echo $nama; ?>
                   </p>
                   <p
                     class="text-sm font-medium text-gray-900 truncate dark:text-gray-300"
                     role="none"
                   >
-                    admin@dindikbud.riau.gov.id
+                    <?=$_SESSION['email']?>
                   </p>
                 </div>
                 <ul class="py-1" role="none">
                   <li>
                     <a
-                      href="#"
+                      href="dashboard.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Dashboard</a
@@ -182,7 +195,7 @@ if (isset($_POST['delete'])) {
                   </li>
                   <li>
                     <a
-                      href="login.php"
+                      href="../../index.php"
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Sign out</a
@@ -297,7 +310,31 @@ if (isset($_POST['delete'])) {
       >
         <!-- Start block -->
         <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5 antialiased">
+          
           <div class="mx-auto max-w-screen-2xl px-4 lg:px-12">
+            <div>
+             <nav class="flex mb-4" aria-label="Breadcrumb">
+               <ol class="inline-flex items-center space-x-1 md:space-x-3 rtl:space-x-reverse">
+                 <li class="inline-flex items-center">
+                   <a href="dashboard.php" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                     <svg class="w-3 h-3 me-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                       <path d="m19.707 9.293-2-2-7-7a1 1 0 0 0-1.414 0l-7 7-2 2a1 1 0 0 0 1.414 1.414L2 10.414V18a2 2 0 0 0 2 2h3a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h3a2 2 0 0 0 2-2v-7.586l.293.293a1 1 0 0 0 1.414-1.414Z"/>
+                     </svg>
+                     Dashboard
+                   </a>
+                 </li>
+                 <li>
+                   <div class="flex items-center">
+                     <svg class="w-3 h-3 text-gray-400 mx-1 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                       <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+                     </svg>
+                     <span class="ms-1 text-sm font-medium text-gray-700 md:ms-2 dark:text-gray-400 dark:hover:text-white">Sekolah</a>
+                   </div>
+                 </li>
+               </ol>
+             </nav>
+             <h2 class="mb-4 text-3xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl dark:text-white">Kelola Sekolah</h2>
+            </div> 
             <div
               class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden"
             >
@@ -306,74 +343,37 @@ if (isset($_POST['delete'])) {
               >
                 <div class="flex-1 flex items-center space-x-2">
                   <h5>
-                    <span class="text-gray-500">Semua Sekolah:</span>
-                    <span class="dark:text-white">123456</span>
+                    <span class="text-gray-500">Result:</span>
+                    <span class="dark:text-white"><?=(isset($_GET['KataKunci'])) ? $_GET['KataKunci'] : "Semua Sekolah";?></span>
                   </h5>
-                  <h5 class="text-gray-500 dark:text-gray-400 ml-1">
-                    1-100 (436)
-                  </h5>
-                  <button
-                    type="button"
-                    class="group"
-                    data-tooltip-target="results-tooltip"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                      viewbox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                    <span class="sr-only">More info</span>
-                  </button>
-                  <div
-                    id="results-tooltip"
-                    role="tooltip"
-                    class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-                  >
-                    Showing 1-100 of 436 results
-                    <div class="tooltip-arrow" data-popper-arrow=""></div>
-                  </div>
                 </div>
               </div>
               <div
                 class="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700"
               >
-                <div class="w-full md:w-1/2">
-                  <form class="flex items-center">
-                    <label for="simple-search" class="sr-only">Search</label>
-                    <div class="relative w-full">
-                      <div
-                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                          fill="currentColor"
-                          viewbox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                          />
-                        </svg>
+                <div class="w-full gap-4 md:w-1/2">
+                  <form class="flex flex-row items-center mx-auto">   
+                      <label for="voice-search" class="sr-only">Search</label>
+                      <div class="relative w-full">
+                          <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                              <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                              </svg>
+                          </div>
+                          <input type="text" name="KataKunci" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Cari Sekolah" value="<?php if (isset($_GET['KataKunci']))  echo $_GET['KataKunci']; ?>"value="<?php if (isset($_GET['KataKunci']))  echo $_GET['KataKunci']; ?>" required />
+                          <?php if (isset($_GET['KataKunci']))  echo  
+                          "<a href='sekolah.php' class='absolute inset-y-0 end-0 flex items-center pe-3'>
+                          <svg  viewBox='0 0 24 24' fill='none' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'>
+                            <path d='M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z' fill='black'/>
+                          </svg>
+                        </a>";
+                          ?>
                       </div>
-                      <input
-                        type="text"
-                        id="simple-search"
-                        placeholder="Cari Sekolah"
-                        required=""
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      />
-                    </div>
+                      <button type="submit" class="inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                          <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                          </svg>
+                      </button>
                   </form>
                 </div>
                 <div
@@ -399,7 +399,7 @@ if (isset($_POST['delete'])) {
                         d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
                       />
                     </svg>
-                    Tambah Sekolah
+                    Tambah
                   </button>
                   <div
                     id="filterDropdown"
@@ -454,106 +454,8 @@ if (isset($_POST['delete'])) {
                         />
                       </div>
                     </div>
-                    <div
-                      id="accordion-flush"
-                      data-accordion="collapse"
-                      data-active-classes="text-black dark:text-white"
-                      data-inactive-classes="text-gray-500 dark:text-gray-400"
-                    >
-                     
-                       
-                        </button>
-                      </h2>
-                     
-                        <button
-                          type="button"
-                          class="flex items-center justify-between w-full py-2 px-1.5 text-sm font-medium text-left text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                          data-accordion-target="#rating-body"
-                          aria-expanded="true"
-                          aria-controls="rating-body"
-                        >
-                          <span>Rating</span>
-                          <svg
-                            aria-hidden="true"
-                            data-accordion-icon=""
-                            class="w-5 h-5 rotate-180 shrink-0"
-                            fill="currentColor"
-                            viewbox="0 0 20 20"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              fill-rule="evenodd"
-                              clip-rule="evenodd"
-                              d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                            />
-                          </svg>
-                        </button>
-                      </h2>
-                      <div
-                        id="rating-body"
-                        class="hidden"
-                        aria-labelledby="rating-heading"
-                      >
-                        <div
-                          class="py-2 space-y-2 font-light border-b border-gray-200 dark:border-gray-600"
-                        >
-                          <div class="flex items-center">
-                            <input
-                              id="five-stars"
-                              type="radio"
-                              value=""
-                              name="rating"
-                              class="w-4 h-4 bg-gray-100 border-gray-300 text-blue-600 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                            />
-                            <label
-                              for="five-stars"
-                              class="flex items-center ml-2"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>First star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                              <svg
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              
-                              
-                              
-                                aria-hidden="true"
-                                class="w-5 h-5 text-yellow-400"
-                                fill="currentColor"
-                                viewbox="0 0 20 20"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <title>Second star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </>
-                           
-                                <title>Fifth star</title>
-                                <path
-                                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
-                                />
-                              </svg>
-                            </label>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
                   </div>
-                  <div class="flex items-center space-x-3 w-full md:w-auto">
+                  <!-- <div class="flex items-center space-x-3 w-full md:w-auto">
                     <button
                       id="actionsDropdownButton"
                       data-dropdown-toggle="actionsDropdown"
@@ -583,13 +485,6 @@ if (isset($_POST['delete'])) {
                         class="py-1 text-sm text-gray-700 dark:text-gray-200"
                         aria-labelledby="actionsDropdownButton"
                       >
-                        <li>
-                          <a
-                            href="#"
-                            class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                            >Mass Edit</a
-                          >
-                        </li>
                       </ul>
                       <div class="py-1">
                         <a
@@ -599,7 +494,7 @@ if (isset($_POST['delete'])) {
                         >
                       </div>
                     </div>
-                  </div>
+                  </div> -->
                 </div>
               </div>
               <div class="overflow-x-auto">
@@ -610,7 +505,7 @@ if (isset($_POST['delete'])) {
                     class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
                   >
                     <tr>
-                      <th scope="col" class="p-4">
+                      <!-- <th scope="col" class="p-4">
                         <div class="flex items-center">
                           <input
                             id="checkbox-all"
@@ -621,27 +516,61 @@ if (isset($_POST['delete'])) {
                             >checkbox</label
                           >
                         </div>
-                      </th>
-                      <th scope="col" class="p-4">NPSN</th>
+                      </th> -->
+                      <th scope="col" class="pl-8 p-4">NPSN</th>
                       <th scope="col" class="p-4">Nama</th>
-                      <th scope="col" class="p-4">BP</th>
+                      <th scope="col" class="p-4">Jenjang</th>
                       <th scope="col" class="p-4">Status</th>
                       <th scope="col" class="p-4">Akreditasi</th>
+                      <th scope="col" class="p-4">Action</th>
 
 
                     </tr>
                   </thead>
-                  <?php
-                        try {
-                            $stmt = $conn->prepare("SELECT * FROM sekolah");
-                            $stmt->execute();
-                            while ($row = $stmt->fetch()) {
-                            ?>
+                    <?php
+                      $page = (isset($_GET['page'])) ? (int) $_GET['page'] : 1;
+                      $kolomCari = (isset($_GET['Kolom'])) ? $_GET['Kolom'] : "";
+                      $kolomKataKunci = (isset($_GET['KataKunci'])) ? $_GET['KataKunci'] : "";
+                      // Number of records per page
+                      $limit = 5;
+                      // Calculate the starting record for the current page
+                      $limitStart = ($page - 1) * $limit;
+                      $length_row = 0;
+
+                      try {
+                          // Check if there's a search keyword
+                          if ($kolomKataKunci == "") {
+                              // No search keyword, fetch all records with pagination
+                              $stmt = $conn->prepare("SELECT * FROM sekolah ORDER BY nama LIMIT :limitStart, :limit");
+                          } else {
+                              // Search keyword is set, modify the query to include a search filter
+                              $stmt = $conn->prepare("SELECT * FROM sekolah WHERE nama LIKE :kolomKataKunci OR npsm LIKE :kolomKataKunci OR bp LIKE :kolomKataKunci OR status LIKE :kolomKataKunci OR akreditasi LIKE :kolomKataKunci ORDER BY nama LIMIT :limitStart, :limit");
+                              // Bind the search keyword with wildcards for partial matching
+                              $stmt->bindValue(':kolomKataKunci', "%$kolomKataKunci%", PDO::PARAM_STR);
+                          }
+
+                          // Bind the pagination parameters
+                          $stmt->bindValue(':limitStart', $limitStart, PDO::PARAM_INT);
+                          $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+
+                          // Execute the query
+                          $stmt->execute();
+
+                          // Fetch all results
+                          $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                          $length_row = count($rows);
+
+                          // Initialize row number
+                          $no = $limitStart + 1;
+
+                          // Loop through the records and display them
+                          foreach ($rows as $row) {
+                    ?>
                   <tbody>
                     <tr
                       class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
-                      <td class="p-4 w-4">
+                      <!-- <td class="p-4 w-4">
                         <div class="flex items-center">
                           <input
                             id="checkbox-table-search-1"
@@ -653,11 +582,11 @@ if (isset($_POST['delete'])) {
                             >checkbox</label
                           >
                         </div>
-                      </td>
+                      </td> -->
                       <td
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        class="pl-8 px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                      <?php echo   $row['npsm']  ;?> 
+                      <?php echo htmlspecialchars($row['npsm']);?> 
                       </td>
                       <td
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
@@ -677,7 +606,12 @@ if (isset($_POST['delete'])) {
                       <td
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                      <?php echo   $row['akreditasi']  ;?> 
+                      <?php switch ($row['akreditasi']) {
+                          case 'A': echo "A (Unggul)"; break;
+                          case 'B': echo "B (Baik)"; break;
+                          case 'C': echo "C (Cukup)"; break;
+                          default: echo "TT (Tidak Terakreditasi)"; break;
+                      }   ?> 
                       </td>
                       
                           
@@ -833,7 +767,7 @@ if (isset($_POST['delete'])) {
             <label
               for="updateBp"
               class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >BP</label
+              >Bentuk Pendidikan</label
             >
             <select
               id="bp"
@@ -861,10 +795,10 @@ if (isset($_POST['delete'])) {
               required
             >
             
-              <option value="A" <?php echo ($row['akreditasi'] == 'A') ? 'selected' : ''; ?>>A</option>
-                                <option value="B" <?php echo ($row['akreditasi'] == 'B') ? 'selected' : ''; ?>>B</option>
-                                <option value="C" <?php echo ($row['akreditasi'] == 'C') ? 'selected' : ''; ?>>C</option>
-                                <option value="TT" <?php echo ($row['akreditasi'] == 'TT') ? 'selected' : ''; ?>>TT</option>
+              <option value="A" <?php echo ($row['akreditasi'] == 'A') ? 'selected' : ''; ?>>A (Unggul)</option>
+                                <option value="B" <?php echo ($row['akreditasi'] == 'B') ? 'selected' : ''; ?>>B (Baik)</option>
+                                <option value="C" <?php echo ($row['akreditasi'] == 'C') ? 'selected' : ''; ?>>C (Cukup)</option>
+                                <option value="TT" <?php echo ($row['akreditasi'] == 'TT') ? 'selected' : ''; ?>>TT (Tidak Terakreditasi)</option>
             </select>
           </div>
         </div>
@@ -967,6 +901,32 @@ if (isset($_POST['delete'])) {
                   </tbody>
                 </table>
               </div>
+              <?php
+              //kondisi jika parameter pencarian kosong
+              if ($kolomKataKunci == "") {
+                $countStmt = $conn->prepare("SELECT COUNT(*) AS total_baris FROM sekolah");
+              } else {
+                //kondisi jika parameter kolom pencarian diisi
+                $countStmt = $conn->prepare("SELECT COUNT(*) AS total_baris FROM sekolah WHERE nama LIKE :kolomKataKunci OR npsm LIKE :kolomKataKunci OR bp LIKE :kolomKataKunci OR status LIKE :kolomKataKunci OR akreditasi LIKE :kolomKataKunci"); 
+                // Bind the search keyword with wildcards for partial matching
+                $countStmt->bindValue(':kolomKataKunci', "%$kolomKataKunci%", PDO::PARAM_STR);
+              }
+              $countStmt->execute();
+              $rowCount = $countStmt->fetch(PDO::FETCH_ASSOC);
+              //Hitung semua jumlah data yang berada pada tabel Sisawa
+              $JumlahData = $rowCount['total_baris'];
+              // Hitung jumlah halaman yang tersedia
+              $jumlahPage = ceil($JumlahData / $limit);
+
+              // Jumlah link number 
+              $jumlahNumber = 1;
+
+              // Untuk awal link number
+              $startNumber = ($page > $jumlahNumber) ? $page - $jumlahNumber : 1;
+
+              // Untuk akhir link number
+              $endNumber = ($page < ($jumlahPage - $jumlahNumber)) ? $page + $jumlahNumber : $jumlahPage;
+              ?>
               <nav
                 class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
                 aria-label="Table navigation"
@@ -976,19 +936,24 @@ if (isset($_POST['delete'])) {
                 >
                   Showing
                   <span class="font-semibold text-gray-900 dark:text-white"
-                    >1-10</span
+                    ><?=$limitStart+1?>-<?php echo $endNumber == $page ? $JumlahData : $page*$limit; ?></span
                   >
                   of
                   <span class="font-semibold text-gray-900 dark:text-white"
-                    >1000</span
+                    ><?=$JumlahData?></span
                   >
                 </span>
                 <ul class="inline-flex items-stretch -space-x-px">
+                  <?php
+                    // Jika page = 1, maka LinkPrev disable
+                    if ($page == 1) {
+                  ?>
                   <li>
                     <a
-                      href="#"
-                      class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                    >
+                      href=""
+                      class="flex items-center justify-center cursor-not-allowed h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                      disabled
+                      >
                       <span class="sr-only">Previous</span>
                       <svg
                         class="w-5 h-5"
@@ -1005,48 +970,18 @@ if (isset($_POST['delete'])) {
                       </svg>
                     </a>
                   </li>
+                  <?php
+                  } else {
+                    $LinkPrev = ($page > 1) ? $page - 1 : 1;
+
+                    if ($kolomKataKunci == "") {
+                    ?>
                   <li>
                     <a
-                      href="#"
-                      class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      >1</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      >2</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      aria-current="page"
-                      class="flex items-center justify-center text-sm z-10 py-2 px-3 leading-tight text-blue-600 bg-blue-50 border border-blue-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                      >3</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      >...</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      >100</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                    >
-                      <span class="sr-only">Next</span>
+                      href="sekolah.php?page=<?php echo $LinkPrev; ?>"
+                      class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"                      
+                      >
+                      <span class="sr-only">Previous</span>
                       <svg
                         class="w-5 h-5"
                         aria-hidden="true"
@@ -1056,12 +991,147 @@ if (isset($_POST['delete'])) {
                       >
                         <path
                           fill-rule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
                           clip-rule="evenodd"
                         />
                       </svg>
                     </a>
                   </li>
+                  <?php
+                  } else {
+                  ?>    
+                  <li>
+                    <a
+                      href="sekolah.php?KataKunci=<?php echo $kolomKataKunci; ?>&page=<?php echo $LinkPrev; ?>"
+                      class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"                      
+                      >
+                      <span class="sr-only">Previous</span>
+                      <svg
+                        class="w-5 h-5"
+                        aria-hidden="true"
+                        fill="currentColor"
+                        viewbox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </a>
+                  </li>
+                  <?php
+                      }
+                  }
+                  ?>
+
+                  <!-- Numberr -->
+                  <?php                    
+                    for ($i = $startNumber; $i <= $endNumber; $i++) {
+                        $linkActive = ($page == $i) ? ' class="text-blue-600 bg-blue-50 border border-blue-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"' : '';
+                        $linkNonActive = ($page !== $i) ? ' class="text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"' : '';
+
+                        if ($kolomKataKunci == "") {
+                    ?>
+                            <li <?php echo $linkActive; echo $linkNonActive;?>>
+                              <a
+                                href="sekolah.php?page=<?php echo $i; ?>"
+                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight"
+                                ><?php echo $i; ?></a
+                              >
+                            </li>
+                            <?php
+                        } else {
+                            ?>
+                                <li <?php echo $linkActive; echo $linkNonActive;?>>
+                                <a href="sekolah.php?KataKunci=<?php echo $kolomKataKunci; ?>&page=<?php echo $i; ?>"
+                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight"><?php echo $i; ?></a></li>
+                            <?php
+                        }
+                    }
+                            ?>
+
+                  <!-- Next -->
+                  <?php
+                  if ($page == $jumlahPage) {
+                  ?>
+                      <li>
+                        <a
+                          href=""
+                          class="flex items-center justify-center cursor-not-allowed h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                          disabled
+                        >
+                          <span class="sr-only">Next</span>
+                          <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            fill="currentColor"
+                            viewbox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </a>
+                      </li>
+                      <?php
+                  } else {
+                      $linkNext = ($page < $jumlahPage) ? $page + 1 : $jumlahPage;
+                      if ($kolomKataKunci == "") {
+                      ?>
+                          <li>
+                            <a
+                              href="sekolah.php?page=<?php echo $linkNext; ?>"
+                              class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                            >
+                              <span class="sr-only">Next</span>
+                              <svg
+                                class="w-5 h-5"
+                                aria-hidden="true"
+                                fill="currentColor"
+                                viewbox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                  clip-rule="evenodd"
+                                />
+                              </svg>
+                            </a>
+                          </li>
+                      <?php
+                      } else {
+                      ?>
+                          <li>
+                            <a
+                              href="sekolah.php?KataKunci=<?php echo $kolomKataKunci; ?>&page=<?php echo $linkNext; ?>"
+                              class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                            >
+                              <span class="sr-only">Next</span>
+                              <svg
+                                class="w-5 h-5"
+                                aria-hidden="true"
+                                fill="currentColor"
+                                viewbox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                  clip-rule="evenodd"
+                                />
+                              </svg>
+                            </a>
+                          </li>
+                  <?php
+                      }
+                  }
+                  ?>
                 </ul>
               </nav>
             </div>
@@ -1212,177 +1282,13 @@ if (isset($_POST['delete'])) {
               clip-rule="evenodd"
             />
           </svg>
-          Tambah Sekolah
+          Tambah
         </button>
       </form>
     </div>
   </div>
 </div>
 
-<!-- Update Modal -->
-<div
-  id="updateProductModal"
-  tabindex="-1"
-  aria-hidden="true"
-  class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
->
-  <div class="relative p-4 w-full max-w-2xl max-h-full">
-    <!-- Modal content -->
-    <div class="relative p-4 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
-      <!-- Modal header -->
-      <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-          Update Sekolah
-        </h3>
-        <button
-          type="button"
-          class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
-          data-modal-toggle="updateProductModal"
-        >
-          <svg
-            aria-hidden="true"
-            class="w-5 h-5"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <span class="sr-only">Close modal</span>
-        </button>
-      </div>
-      <!-- Modal body -->
-      <form method="POST">
-      <input type="hidden" name="id" value="<?php echo isset($dataToUpdate['id']) ? $dataToUpdate['id'] : ''; ?>">
-        <div class="grid gap-4 mb-4 sm:grid-cols-2">
-          <div>
-            <label
-              for="updateId"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >ID</label
-            >
-            <input
-              type="text"
-              name="updateId"
-              id="updateId"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Insert ID"
-              required
-            />
-          </div>
-          <div>
-            <label
-              for="updateNpsm"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >NPSN</label
-            >
-            <input
-              type="number"
-              name="updateNpsm"
-              id="updateNpsm"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value="<?php echo isset($dataToUpdate['npsm']) ? $dataToUpdate['npsm'] : ''; ?>"
-              required
-            />
-          </div>
-          <div>
-            <label
-              for="updateNama"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >Nama</label
-            >
-            <input
-              type="text"
-              name="updateNama"
-              id="updateNama"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              value="<?php echo isset($dataToUpdate['nama']) ? $dataToUpdate['nama'] : ''; ?>"
-              required
-            />
-          </div>
-          <div>
-            <label
-              for="updateStatus"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >Status</label
-            >
-            <select
-              id="updateStatus"
-              name="updateStatus"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              required
-            >
-             
-              <option value="Negeri" <?php echo (isset($dataToUpdate['status']) && $dataToUpdate['status'] == 'Negeri') ? 'selected' : ''; ?>>Negeri</option>
-              <option value="Swasta" <?php echo (isset($dataToUpdate['status']) && $dataToUpdate['status'] == 'Swasta') ? 'selected' : ''; ?>>Swasta</option>
-            </select>
-          </div>
-          <div>
-            <label
-              for="updateBp"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >BP</label
-            >
-            <select
-              id="updateBp"
-              name="updateBp"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              required
-            >
-              
-              <option value="SD" <?php echo (isset($dataToUpdate['bp']) && $dataToUpdate['bp'] == 'SD') ? 'selected' : ''; ?>>SD</option>
-                <option value="SMP" <?php echo (isset($dataToUpdate['bp']) && $dataToUpdate['bp'] == 'SMP') ? 'selected' : ''; ?>>SMP</option>
-                <option value="SMA" <?php echo (isset($dataToUpdate['bp']) && $dataToUpdate['bp'] == 'SMA') ? 'selected' : ''; ?>>SMA</option>
-                <option value="SMK" <?php echo (isset($dataToUpdate['bp']) && $dataToUpdate['bp'] == 'SMK') ? 'selected' : ''; ?>>SMK</option>
-            </select>
-          </div>
-          <div>
-            <label
-              for="updateAkreditasi"
-              class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >Akreditasi</label
-            >
-            <select
-              id="updateAkreditasi"
-              name="updateAkreditasi"
-              class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              required
-            >
-            
-              <option value="A" <?php echo (isset($dataToUpdate['akreditasi']) && $dataToUpdate['akreditasi'] == 'A') ? 'selected' : ''; ?>>A</option>
-                                <option value="B" <?php echo (isset($dataToUpdate['akreditasi']) && $dataToUpdate['akreditasi'] == 'B') ? 'selected' : ''; ?>>B</option>
-                                <option value="C" <?php echo (isset($dataToUpdate['akreditasi']) && $dataToUpdate['akreditasi'] == 'C') ? 'selected' : ''; ?>>C</option>
-                                <option value="TT" <?php echo (isset($dataToUpdate['akreditasi']) && $dataToUpdate['akreditasi'] == 'TT') ? 'selected' : ''; ?>>TT</option>
-            </select>
-          </div>
-        </div>
-        <button
-          type="submit"
-           name="update"
-          class="text-white inline-flex items-center bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          <svg
-            class="mr-1 -ml-1 w-6 h-6"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          Update Sekolah
-        </button>
-      </form>
-    </div>
-  </div>
-</div>
 <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 </body>
 </html>

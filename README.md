@@ -18,7 +18,7 @@
   cd rancanganPPSI
 ```
 
-## Commi to Github guide
+## Commit to Github guide
 
 ```bash
   git add .

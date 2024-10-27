@@ -29,7 +29,7 @@
 ```
 
 ```bash
-  git push
+  git pull
 ```
 
 ```bash

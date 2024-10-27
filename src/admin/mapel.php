@@ -18,7 +18,7 @@ if (!isset($_SESSION['id'])) {
 <html>
 
 <head>
-  <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
+  <title>Mata Pelajaran | Sistem Informasi Mutu Program Remedial dan Pengayaan</title>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link href="..\css\output.css" rel="stylesheet" />
@@ -27,7 +27,20 @@ if (!isset($_SESSION['id'])) {
     href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
     rel="stylesheet" />
 </head>
-
+<script>
+<?php if (isset($status) && isset($message)): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: '<?= $status ?>', 
+            title: '<?= $message ?>',
+            showConfirmButton: true
+        }).then(() => {
+            // Redirect setelah SweetAlert ditutup (opsional)
+            window.location.href = "tendik.php";
+        });
+    });
+<?php endif; ?>
+</script>
 <body>
   <nav
     class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700">
@@ -59,7 +72,7 @@ if (!isset($_SESSION['id'])) {
               class="h-8 me-3"
               alt="Logo Dinas Kelas dan Kebudayaan" />
             <span
-              class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">Dindikbud</span>
+              class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white">SIMAPREM</span>
           </a>
         </div>
         <div class="flex items-center">

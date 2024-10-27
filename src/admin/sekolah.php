@@ -21,7 +21,8 @@ try {
     $conn = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    echo "Koneksi gagal: " . $e->getMessage();
+    echo "";
+    // echo "Koneksi gagal: " . $e->getMessage();
 }
 // Fungsi untuk menambah sekolah
 if (isset($_POST['add'])) {
@@ -40,10 +41,12 @@ if (isset($_POST['add'])) {
         $stmt->bindParam(':bp', $bp);
         $stmt->bindParam(':akreditasi', $akreditasi);
         $stmt->execute();
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        $status = "success";
+        $message = "Data berhasil disimpan!";
         exit;
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        $status = "error";
+        $message = "Data gagal disimpan: " . $e->getMessage();
     }
 }
 
@@ -66,10 +69,12 @@ if (isset($_POST['update'])) {
         $stmt->bindParam(':akreditasi', $akreditasi);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        $status = "success";
+        $message = "Data berhasil disimpan!";
         exit;
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        $status = "error";
+        $message = "Data gagal disimpan: " . $e->getMessage();
     }
 }
 if (isset($_POST['delete'])) {
@@ -80,10 +85,12 @@ if (isset($_POST['delete'])) {
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
-        header('Location: ' . $_SERVER['PHP_SELF']);
+        $status = "success";
+        $message = "Data berhasil disimpan!";
         exit;
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        $status = "error";
+        $message = "Data gagal disimpan: " . $e->getMessage();
     }
 }
 
@@ -93,16 +100,32 @@ if (isset($_POST['delete'])) {
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
+    <title>Sekolah | Sistem Informasi Mutu Program Remedial dan Pengayaan</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="..\css\output.css" rel="stylesheet" />
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
     />
   </head>
+  <script>
+<?php if (isset($status) && isset($message)): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: '<?= $status ?>', 
+            title: '<?= $message ?>',
+            showConfirmButton: true
+        }).then(() => {
+            // Redirect setelah SweetAlert ditutup (opsional)
+            window.location.href = "sekolah.php";
+        });
+    });
+<?php endif; ?>
+</script>
   <body>
     <nav
       class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
@@ -140,7 +163,7 @@ if (isset($_POST['delete'])) {
               />
               <span
                 class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
-                >Dindikbud</span
+                >SIMAPREM</span
               >
             </a>
           </div>
@@ -183,14 +206,6 @@ if (isset($_POST['delete'])) {
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Dashboard</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                      role="menuitem"
-                      >Change Password</a
                     >
                   </li>
                   <li>
@@ -603,15 +618,23 @@ if (isset($_POST['delete'])) {
                       >
                         <?php echo   $row['status']  ;?>
                       </td>
+                      <?php 
+                        $ijo = ($row['akreditasi'] == 'A') ? ' class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-green-900 dark:text-green-300"' : '';
+                        $biru = ($row['akreditasi'] == 'B') ? ' class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300"' : '';
+                        $merah = ($row['akreditasi'] == 'C') ? ' class="bg-red-100 text-red-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-red-900 dark:text-red-300"' : '';
+                        $abu = ($row['akreditasi'] == 'TT') ? ' class="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-0.5 rounded dark:bg-gray-900 dark:text-gray-300"' : '';
+                      ?>
                       <td
                         class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
-                      <?php switch ($row['akreditasi']) {
-                          case 'A': echo "A (Unggul)"; break;
-                          case 'B': echo "B (Baik)"; break;
-                          case 'C': echo "C (Cukup)"; break;
-                          default: echo "TT (Tidak Terakreditasi)"; break;
-                      }   ?> 
+                        <span <?php echo $ijo; echo $biru; echo $abu; echo $merah;?> class="">
+                          <?php switch ($row['akreditasi']) {
+                              case 'A': echo "A (Unggul)"; break;
+                              case 'B': echo "B (Baik)"; break;
+                              case 'C': echo "C (Cukup)"; break;
+                              default: echo "TT (Tidak Terakreditasi)"; break;
+                          }   ?> 
+                        </span>
                       </td>
                       
                           
@@ -825,7 +848,7 @@ if (isset($_POST['delete'])) {
     </div>
   </div>
 </div>
-<div
+        <div
           id="deleteModal<?php echo $row['id']?>" 
           tabindex="-1"
           aria-hidden="true"

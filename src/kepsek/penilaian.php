@@ -18,40 +18,56 @@ $detail_kepsek = mysqli_fetch_array($sql_detail);
 $id_sekolah = $detail_kepsek['id_sekolah'];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if ($_POST['btn_change_pass']=='') {
+  if (isset($_POST['pass_val']) && isset($_POST['old_password']) && isset($_POST['new_password'])) {
     $id = $_POST['id'];
     $new_pass = $_POST['new_password'];
     $queryEdit = "UPDATE tendik SET password = '$new_pass' WHERE tendik.id = $id";
     $edit = mysqli_query($koneksi, $queryEdit);
-    if ($edit)
-    {
-        echo "<script>
-        alert('Ubah Password suksess!');
-        document.location='../../index.php';
-          </script>";
-    } else {
-        echo "<script>
-        alert('Ubah Password GAGAL!!');
-        document.location='../../index.php';
-          </script>";
-        }
-  } 
-} 
-
+    try {
+      if ($edit)
+      {
+        $status = "success";
+        $message = "Password berhasil diubah!";
+      } else {
+        $status = "error";
+        $message = "Password gagal diubah";
+      } 
+    } catch (\Throwable $th) {
+      $status = "error";
+      $message = "Password gagal diubah";
+    }
+  }   
+}
 ?>
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
+    <title>Penilaian Mutu | Sistem Informasi Mutu Program Remedial dan Pengayaan</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link href="src\css\output.css" rel="stylesheet" />
+    <link href="..\css\output.css" rel="stylesheet" />
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
     />
   </head>
+<script>
+<?php if (isset($status) && isset($message)): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: '<?= $status ?>', 
+            title: '<?= $message ?>',
+            showConfirmButton: true
+        }).then(() => {
+            // Redirect setelah SweetAlert ditutup (opsional)
+            window.location.href = "../../index.php";
+        });
+    });
+<?php endif; ?>
+</script>
   <body>
     <nav
       class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
@@ -89,7 +105,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               />
               <span
                 class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
-                >Dindikbud</span
+                >SIMAPREM</span
               >
             </a>
           </div>
@@ -203,7 +219,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                       </div>
                   </div>
               </div>
-          </div> 
+            </div> 
           </div>
         </div>
       </div>

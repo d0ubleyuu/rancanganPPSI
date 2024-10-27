@@ -53,30 +53,56 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $successMessage = '';
     $errorMessage = '';
 
-    
-    if (in_array($ekstensiRemedial, $allowedExtensions) && $ukuranRemedial <= $maxSize && in_array($ekstensiPenilaian, $allowedExtensions) && $ukuranPenilaian <= $maxSize) {
-        // Upload file remedial
-        if (move_uploaded_file($file_tmpPenilaian, $linkBerkasPenilaian) && move_uploaded_file($file_tmpRemedial, $linkBerkasRemedial)) {
-            $successMessage .= "File remedial berhasil diunggah. ";
-            
-            // Simpan path ke database
-            $query = "INSERT INTO document (id_mapel, waktu, path_doc_nilai, path_doc_remedial) VALUES ($id, NOW(), '".$namaFileBaru."Catatan_Penilaian.pdf','".$namaFileBaru."Laporan_Remedial.pdf')";
-            mysqli_query($koneksi, $query);
+    try {
+        if (in_array($ekstensiRemedial, $allowedExtensions) && $ukuranRemedial <= $maxSize && in_array($ekstensiPenilaian, $allowedExtensions) && $ukuranPenilaian <= $maxSize) {
+            // Upload file remedial
+            if (move_uploaded_file($file_tmpPenilaian, $linkBerkasPenilaian) && move_uploaded_file($file_tmpRemedial, $linkBerkasRemedial)) {
+                $successMessage .= "File remedial berhasil diunggah. ";
+                
+                // Simpan path ke database
+                $query = "INSERT INTO document (id_mapel, waktu, path_doc_nilai, path_doc_remedial) VALUES ($id, NOW(), '".$namaFileBaru."Catatan_Penilaian.pdf','".$namaFileBaru."Laporan_Remedial.pdf')";
+                mysqli_query($koneksi, $query);
+                $status = "success";
+                $message = "File berhasil diupload!";
+            } else {
+                $status = "error";
+                $message = "File gagal diupload: Lokasi Tidak Ditemukan";
+            }
         } else {
-            $errorMessage .= "Gagal memindahkan file remedial. ";
+            $status = "error";
+            $message = "File gagal diupload: Pastikan File dengan format PDF dan maksimal ukuran 2MB";
         }
-    } else {
-        $errorMessage .= "Ekstensi atau ukuran file remedial tidak diizinkan. ";
-    }
-
-    // Menampilkan pop-up
-    if ($successMessage) {
-        echo "<script>alert('$successMessage');document.location='dashboard.php';</script>";
-    }
-    if ($errorMessage) {
-        echo "<script>alert('$errorMessage');document.location='dashboard.php';</script>";
-    }
-} else{
-    echo "<script>alert(TAKDEE);</script>";
+    } catch (\Throwable $th) {
+        $status = "error";
+        $message = "File gagal diupload";
+    }    
 }
 ?>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="..\css\output.css" rel="stylesheet" />
+    <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <script>
+<?php if (isset($status) && isset($message)): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: '<?= $status ?>', 
+            title: '<?= $message ?>',
+            showConfirmButton: true
+        }).then(() => {
+            // Redirect setelah SweetAlert ditutup (opsional)
+            window.location.href = "dashboard.php";
+        });
+    });
+<?php endif; ?>
+</script>
+</html>

@@ -40,11 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $id = $user_data['id'];
         $nama = $user_data['nama'];
         $jabatan = $user_data['jabatan'];
+        $id_sekolah = $user_data['id_sekolah'];
 
         session_start();
         $_SESSION['id'] = $id;
         $_SESSION['nama'] = $nama;
+        $_SESSION['nama'] = $nama;
         $_SESSION['jabatan'] = $jabatan;
+        $_SESSION['id_sekolah'] = $id_sekolah;
         $_SESSION['email'] = $email;
         $_SESSION['password'] = $password;
 
@@ -76,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
+    <title>Login | Sistem Informasi Mutu Program Remedial dan Pengayaan</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="src\css\output.css" rel="stylesheet" />

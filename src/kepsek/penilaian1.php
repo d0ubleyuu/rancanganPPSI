@@ -13,6 +13,30 @@ if (!isset($_SESSION['id'])) {
   }
 }
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (isset($_POST['pass_val']) && isset($_POST['old_password']) && isset($_POST['new_password'])) {
+    $id = $_POST['id'];
+    $new_pass = $_POST['new_password'];
+    $queryEdit = "UPDATE tendik SET password = '$new_pass' WHERE tendik.id = $id";
+    $edit = mysqli_query($koneksi, $queryEdit);
+    try {
+      if ($edit)
+      {
+        $status = "success";
+        $message = "Password berhasil diubah!";
+        $fitur = 'password';
+      } else {
+        $status = "error";
+        $message = "Password gagal diubah";
+        $fitur = 'password';
+      } 
+    } catch (\Throwable $th) {
+      $status = "error";
+      $message = "Password gagal diubah";
+      $fitur = 'password';
+    }
+  }   
+}
 
 // Fungsi untuk analisis mutu
 function analisisMutu($sesuai_jadwal, $metode_beragam, $berkelanjutan, $peningkataan) {
@@ -28,7 +52,7 @@ function analisisMutu($sesuai_jadwal, $metode_beragam, $berkelanjutan, $peningka
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if ($_POST['simpan']) {
+  if (isset($_POST['simpan'])) {
     // Ambil nilai id_mapel dari POST
     $id_document = $_POST['id_document'];
     $id_mapel = $_POST['id_mapel'];
@@ -41,7 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $peningkatan = $_POST['peningkatan'];
     $waktu = date("Y-m-d H:i:s");
     $mutu = analisisMutu($sesuai_jadwal, $metode_beragam, $berkelanjutan, $peningkatan);
-    echo "<script>alert('Hasil analisis mutu: " . $mutu . "');</script>";
     
     $query = "INSERT INTO `penilaian_mutu` VALUES ('','$id_document','$id_mapel','$id_kepsek','$waktu','$doc_nilai','$remedial','$sesuai_jadwal','$metode_beragam','$berkelanjutan','$peningkatan','$mutu')";
     $simpan = mysqli_query($koneksi, $query);
@@ -49,15 +72,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $edit = mysqli_query($koneksi, $queryEdit);
     if ($simpan && $edit)
     {
-        echo "<script>
-        alert('Simpan data suksess!');
-        document.location='penilaian.php';
-          </script>";
+      $status = "success";
+      $message = "Penilaian Telah Selesai, Data Berhasil Ditambah!";
     } else {
-        echo "<script>
-        alert('Simpan data GAGAL!!');
-        document.location='penilaian.php';
-          </script>";
+      $status = "error";
+      $message = "Penilaian Telah Selesai, Data Gagal Ditambah!";
     }
   } else if ($_POST['btn-menilai']==''){
 
@@ -71,21 +90,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       document.location='penilaian.php';
       </script>";
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
+    <title>Penilaian Mutu | Sistem Informasi Mutu Program Remedial dan Pengayaan</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="..\css\output.css" rel="stylesheet" />
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
     />
   </head>
+<script>
+<?php if (isset($status) && isset($message)): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: '<?= $status ?>', 
+            title: '<?= $message ?>',
+            showConfirmButton: true
+        }).then(() => {
+            <?php if (isset($fitur)):?>
+              // Redirect setelah SweetAlert ditutup (opsional)
+              window.location.href = "../../index.php";
+            <?php endif; ?>
+            <?php if (!isset($fitur)):?>
+              // Redirect setelah SweetAlert ditutup (opsional)
+              window.location.href = "penilaian.php";
+            <?php endif; ?>
+        });
+    });
+<?php endif; ?>
+</script>
   <body class="min-h-screen w-full">
     <nav
       class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
@@ -123,7 +163,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               />
               <span
                 class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
-                >Dindikbud</span
+                >SIMAPREM</span
               >
             </a>
           </div>
@@ -169,11 +209,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     >
                   </li>
                   <li>
-                    <a
-                      href="#"
-                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                    <button
+                      data-modal-target="authentication-modal" data-modal-toggle="authentication-modal"
+                      class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
-                      >Change Password</a
+                      >Change Password</button
                     >
                   </li>
                   <li>
@@ -187,6 +227,57 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </ul>
               </div>
             </div>
+                      <!-- Change Password modal -->
+          <div id="authentication-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+              <div class="relative p-4 w-full max-w-md max-h-full">
+                  <!-- Modal content -->
+                  <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                      <!-- Modal header -->
+                      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                              Change Password
+                          </h3>
+                          <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal">
+                              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                              </svg>
+                              <span class="sr-only">Close modal</span>
+                          </button>
+                      </div>
+                      <!-- Modal body -->
+                      <div class="p-4 md:p-5">
+                      <form class="space-y-4" method="POST" onsubmit="return validatePassword()">
+                        <!-- Div untuk menampilkan pesan error -->
+                        <input type="hidden" name="pass_val" id="pass_val" value=<?=$_SESSION['password']?> />
+                        <input type="hidden" name="id" id="id" value=<?=$_SESSION['id']?> />
+                        <div id="error-message" class="hidden flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
+                            <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                            </svg>
+                            <span class="sr-only">Error</span>
+                            <div>
+                                <span class="font-medium" id="alert-title">Error!</span> <span id="alert-message"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your old password</label>
+                            <input type="password" name="old_password" id="old_password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                        </div>
+                        <div>
+                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your new password</label>
+                            <input type="password" name="new_password" id="new_password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                        </div>
+                        <div>
+                            <label for="password" class="block  text-sm font-medium text-gray-900 dark:text-white">Confirm new password</label>
+                            <input type="password" name="confirm_password" id="confirm_password" placeholder="••••••••" class="bg-gray-50 mb-6 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                        </div>
+                        <button type="submit" nama="btn_change_pass" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Change Password</button>
+                        
+                      </form>
+                      </div>
+                  </div>
+              </div>
+          </div> 
           </div>
         </div>
       </div>

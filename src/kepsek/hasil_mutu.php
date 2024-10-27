@@ -14,24 +14,25 @@ if (!isset($_SESSION['id'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-  if (isset($_POST['new_password'])) {
+  if (isset($_POST['pass_val']) && isset($_POST['old_password']) && isset($_POST['new_password'])) {
     $id = $_POST['id'];
     $new_pass = $_POST['new_password'];
     $queryEdit = "UPDATE tendik SET password = '$new_pass' WHERE tendik.id = $id";
     $edit = mysqli_query($koneksi, $queryEdit);
-    if ($edit)
-    {
-        echo "<script>
-        alert('Ubah Password suksess!');
-        document.location='../../index.php';
-          </script>";
-    } else {
-        echo "<script>
-        alert('Ubah Password GAGAL!!');
-        document.location='../../index.php';
-          </script>";
-        }
-  } 
+    try {
+      if ($edit)
+      {
+        $status = "success";
+        $message = "Password berhasil diubah!";
+      } else {
+        $status = "error";
+        $message = "Password gagal diubah";
+      } 
+    } catch (\Throwable $th) {
+      $status = "error";
+      $message = "Password gagal diubah";
+    }
+  }   
 
   if(isset($_POST['id_penilaian'])) {
   $id_penilaian = $_POST['id_penilaian'];
@@ -75,16 +76,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
+    <title>Hasil Penilaian | Sistem Informasi Mutu Program Remedial dan Pengayaan</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <link href="..\css\output.css" rel="stylesheet" /> -->
+    <link href="..\css\output.css" rel="stylesheet" />
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
-    <link
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
+    <!-- <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
-    />
+    /> -->
   </head>
+  <script>
+<?php if (isset($status) && isset($message)): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: '<?= $status ?>', 
+            title: '<?= $message ?>',
+            showConfirmButton: true
+        }).then(() => {
+            // Redirect setelah SweetAlert ditutup (opsional)
+            window.location.href = "../../index.php";
+        });
+    });
+<?php endif; ?>
+</script>
   <body>
     <nav
       class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
@@ -122,7 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               />
               <span
                 class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
-                >Dindikbud</span
+                >SIMAPREM</span
               >
             </a>
           </div>
@@ -247,7 +264,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <div
         class="px-4 py-8 flex flex-col items-center justify-center border-2 border-gray-200 border-dashed rounded-lg h-full dark:border-gray-700 mt-14 "
       >
-      <h1 class="mb-4 text-4xl text-center font-extrabold leading-5 tracking-tight text-gray-900 md:text-4xl lg:text-6 dark:text-white">Hasil Penilaian Capaian Program <span class="text-blue-600 dark:text-blue-500">Remedial dan Pengayaan</span> </h1>
+      <h1 class="mb-4 text-2xl text-center font-extrabold leading-5 tracking-tight text-gray-900 md:text-4xl lg:text-6 dark:text-white">Hasil Penilaian Capaian Program <span class="text-blue-600 dark:text-blue-500">Remedial dan Pengayaan</span> </h1>
         <div class="flex items-center mt-8">
         <?php 
           for ($i = 0; $i  < 4; $i++) {
@@ -255,7 +272,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               echo '
               <svg
                 aria-hidden="true"
-                class="w-16 h-16 text-yellow-400"
+                class="w-8 h-8 md:w-14 md:h-14 lg:w-16 lg:h-16 text-yellow-400"
                 fill="currentColor"
                 viewbox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -268,7 +285,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               echo '
               <svg
                 aria-hidden="true"
-                class="w-16 h-16 text-gray-400"
+                class="w-8 h-8 md:w-14 md:h-14 lg:w-16 lg:h-16 text-gray-400"
                 fill="currentColor"
                 viewbox="0 0 20 20"
                 xmlns="http://www.w3.org/2000/svg"
@@ -281,147 +298,236 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
           }
         ?>
-        <span class="text-4xl text-gray-500 dark:text-gray-400 ml-4"
+        <span class="text-xl md:text-3xl lg:text-4xl text-gray-500 dark:text-gray-400 ml-4"
           ><?php echo $row['mutu'];?>.0</span
         >
         </div>
 
-        <div class="flex gap-6 items-start mt-8 mb-16 w-full">
+        <div class="flex flex-col lg:flex-row gap-6 items-start mt-8 w-full">
           
           <div class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow rounded-lg p-5">
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Detail Sekolah</h2>
-              <address class="relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200 not-italic grid grid-cols-2">
-                  <div class="space-y-2 text-gray-500 dark:text-gray-400 leading-loose hidden sm:block">
-                      Nama <br />
-                      NPSN <br />
-                      Status <br />
-                      Bentuk Pendidikan <br />
-                      Akreditasi
-                  </div>
-                  <div id="contact-details" class="space-y-2 text-gray-900 dark:text-white font-medium leading-loose">
-                      <?php echo $row['nama_sekolah'];?> <br />
-                      <?php echo $row['npsm_sekolah'];?> <br />
-                      <?php echo $row['status_sekolah'];?> <br />
-                      <?php echo $row['bp_sekolah'];?> <br />
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-5">Detail Sekolah</h2>
+            <div class="block w-full overflow-x-auto">
+              <table class="items-center w-full relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200">
+                <tbody>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Nama</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['nama_sekolah'];?></th>
+                  </tr>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">NPSN</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['npsm_sekolah'];?></th>
+                  </tr>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Status</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['status_sekolah'];?></th>
+                  </tr>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Jenjang</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['bp_sekolah'];?></th>
+                  </tr>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Akreditasi</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
                       <?php 
-                      // Agama
-                      if ($row['akreditasi_sekolah'] == "A") {
-                          $akreditasi_sekolah = 'A (Unggul)';
-                      } else if ($row['akreditasi_sekolah'] == "B") {
-                          $akreditasi_sekolah = '(B) Baik';
-                      } else if ($row['akreditasi_sekolah'] == "C") {
-                          $akreditasi_sekolah = '(C) Cukup';
-                      } else if ($row['akreditasi_sekolah'] == "TT") {
-                          $akreditasi_sekolah = 'Tidak Terakreditasi';
-                      }  else {
-                          $akreditasi_sekolah = 'Not Found';
-                      }
-                      echo $akreditasi_sekolah;?>
-                      
-                  </div>
-                  </div>
-              </address>
+                        if ($row['akreditasi_sekolah'] == "A") {
+                            $akreditasi_sekolah = 'A (Unggul)';
+                        } else if ($row['akreditasi_sekolah'] == "B") {
+                            $akreditasi_sekolah = '(B) Baik';
+                        } else if ($row['akreditasi_sekolah'] == "C") {
+                            $akreditasi_sekolah = '(C) Cukup';
+                        } else if ($row['akreditasi_sekolah'] == "TT") {
+                            $akreditasi_sekolah = 'Tidak Terakreditasi';
+                        }  else {
+                            $akreditasi_sekolah = 'Not Found';
+                        }
+                        echo $akreditasi_sekolah;
+                      ?>
+                    </th>
+                  </tr>
+                </tbody>
+              </table>    
+            </div>
+          </div>
 
           <div class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow rounded-lg p-5">
-              <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Detail Mata Pelajaran</h2>
-              <address class="relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200 not-italic grid grid-cols-2">
-                  <div class="space-y-2 text-gray-500 dark:text-gray-400 leading-loose hidden sm:block">
-                      Kode <br />
-                      Nama <br />
-                      kelas <br />
-                      Tahun Ajar <br />
-                      KKM 
-                  </div>
-                  <div id="contact-details" class="space-y-2 text-gray-900 dark:text-white font-medium leading-loose">
-                      <?php echo $row['kode_mapel'];?> <br />
-                      <?php echo $row['nama_mapel'];?> <br />
-                      <?php echo $row['kelas'];?> <br />
-                      <?php echo $row['ta'];?> <br />
-                      <?php echo $row['kkm'];?> 
-                  </div>
-                  </div>
-              </address>
-
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-5">Detail Sekolah</h2>
+            <div class="block w-full overflow-x-auto">
+              <table class="items-center w-full relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200">
+                <tbody>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Kode</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['kode_mapel'];?></th>
+                  </tr>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Nama</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['nama_mapel'];?></th>
+                  </tr>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Kelas</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['kelas'];?></th>
+                  </tr>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">TA</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['ta'];?></th>
+                  </tr>
+                  <tr class="text-gray-700 dark:text-gray-100">
+                    <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">KKM</td>
+                    <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['kkm'];?></th>
+                  </tr>
+                </tbody>
+              </table>    
+            </div>
           </div>
-          <div class="flex gap-6 items-start mt-8 mb-16 w-full">
+
+        </div>
+          <div class="flex flex-col lg:flex-row gap-6 items-start mt-6 w-full">
             <div class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow rounded-lg p-5">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Detail Pengajar</h2>
-            <address class="relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200 not-italic grid grid-cols-2">
-                <div class="space-y-2 text-gray-500 dark:text-gray-400 leading-loose hidden sm:block">
-                    Nama <br />
-                    NIP <br />
-                    Jenis Kelamin <br />
-                    Jabatan <br />
-                    Pendidikan
-                </div>
-                <?php 
-                $queryPengajar = mysqli_query($koneksi, "SELECT * FROM tendik WHERE id= '$row[id_pengajar]'");
-                foreach ($queryPengajar as $guru) {
-                ?>
-                <div id="contact-details" class="space-y-2 text-gray-900 dark:text-white font-medium leading-loose">
-                    <?php echo $guru['nama'];?>  <br />
-                    <?php echo $guru['nip'];?>  <br />
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-5">Detail Pengajar</h2>
+              <div class="block w-full overflow-x-auto">
+                <table class="items-center w-full relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200">
+                  <tbody>
                     <?php 
-                    $jenis_kelamin = $guru['jk'] == 'P' ? 'Perempuan' : 'Laki-Laki';
-                    echo $jenis_kelamin;
-                    ?>  <br />
-                    <?php echo $guru['jabatan'];?> <br />
-                    <?php echo $guru['pendidikan'];
-                }?>
-                </div>
-                </div>
-            </address>
-  
+                      $queryPengajar = mysqli_query($koneksi, "SELECT * FROM tendik WHERE id= '$row[id_pengajar]'");
+                      foreach ($queryPengajar as $guru) {
+                    ?>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Nama</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?= $guru['nama']?></th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">NIP</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?= $guru['nip']?></th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">JK</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                        <?php 
+                          $jenis_kelamin = $guru['jk']== 'P' ? 'Perempuan' : 'Laki-Laki';
+                          echo $jenis_kelamin;
+                        ?>  
+                      </th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Jabatan</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?= $guru['jabatan']?></th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Pendidikan</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?=$guru['pendidikan'];}?></th>
+                    </tr>
+                  </tbody>
+                </table>    
+              </div>
+            </div>
+            
             <div class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow rounded-lg p-5">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Detail Penilai</h2>
-            <address class="relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200 not-italic grid grid-cols-2">
-                <div class="space-y-2 text-gray-500 dark:text-gray-400 leading-loose hidden sm:block">
-                    Nama <br />
-                    NIP <br />
-                    Jenis Kelamin <br />
-                    Jabatan <br />
-                    Pendidikan
-                </div>
-                <div id="contact-details" class="space-y-2 text-gray-900 dark:text-white font-medium leading-loose">
-                    <?php echo $row['nama_penilai'];?> <br />
-                    <?php echo $row['nip_penilai'];?> <br />
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-5">Detail Penilai</h2>
+              <div class="block w-full overflow-x-auto">
+                <table class="items-center w-full relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200">
+                  <tbody>
                     <?php 
-                    $jenis_kelamin = $row['jk_penilai'] == 'P' ? 'Perempuan' : 'Laki-Laki';
-                    echo $jenis_kelamin;
-                    ?> <br />
-                    <?php echo $row['jabatan_penilai'];?> <br />
-                    <?php echo $row['pendidikan_penilai'];?>
-                </div>
-                </div>
-            </address>
+                      $queryPengajar = mysqli_query($koneksi, "SELECT * FROM tendik WHERE id= '$row[id_pengajar]'");
+                      foreach ($queryPengajar as $guru) {
+                    ?>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Nama</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?= $row['nama_penilai']?></th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">NIP</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?= $row['nip_penilai']?></th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">JK</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                        <?php 
+                          $jenis_kelamin = $row['jk_penilai'] == 'P' ? 'Perempuan' : 'Laki-Laki';
+                          echo $jenis_kelamin;
+                        ?>  
+                      </th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Jabatan</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?= $row['jabatan_penilai']?></th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Pendidikan</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?=$row['pendidikan_penilai'];}?></th>
+                    </tr>
+                  </tbody>
+                </table>    
+              </div>
+            </div>
           </div>
               
           
 
-        <div class="flex gap-6 items-start mt-8 w-full">
+        <div class="flex gap-6 items-start mt-6 w-full">
           <div class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow rounded-lg p-5">
-            <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Hasil Penilaian</h2>
-            <address class="relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200 not-italic grid grid-cols-2">
-                <div class="space-y-2 text-gray-500 dark:text-gray-400 leading-loose hidden sm:block">
-                    Waktu Penilaian <br />
-                    Doc. Penilaian <br />
-                    Doc. Remedial <br />
-                    Program dilakukan Sesuai dengan Jadwal <br />
-                    Program dilakukan dengan Metode yang Beragam  <br />
-                    Program dilakukan Secara Berkelanjutan  <br />
-                    Hasil Program Mengalami Peningkatan Nilai  <br />
-                </div>
-                <div id="contact-details" class="space-y-2 text-gray-900 dark:text-white font-medium leading-loose">
-                    <?php echo $row['waktu'];?> <br />
-                    <a href="../document/penilaian/<?php echo $row['doc_nilai'];?>" target="_blank" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Download</a>  <br />
-                    <a href="../document/remedial/<?php echo $row['doc_remedial'];?>" target="_blank" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Download</a>  <br />
-                    <?php echo $row['sesuai_jadwal'];?>  <br />
-                    <?php echo $row['metode_beragam'];?>  <br />
-                    <?php echo $row['berkelanjutan'];?>  <br />
-                    <?php echo $row['peningkatan'];?> 
-                </div>
-                </div>
-            </address>
+              <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-5">Hasil Penilaian</h2>
+              <div class="block w-full overflow-x-auto">
+                <table class="items-center w-full relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200">
+                  <tbody>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Waktu Penilaian</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left"><?php echo $row['waktu'];?></th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Doc. Penilaian</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                        <a href="../document/penilaian/<?php echo $row['doc_nilai'];?>" target="_blank" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Download Doc Penilaian</a>   
+                      </th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Doc. Remedial</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                        <a href="../document/remedial/<?php echo $row['doc_remedial'];?>" target="_blank" class="font-medium text-blue-600 dark:text-blue-500 hover:underline">Download Doc Remedial</a>  
+                      </th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Program dilakukan Sesuai dengan Jadwal</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                        <?php 
+                          $answers = $row['sesuai_jadwal']== 0 ? 'Tidak' : 'Iyaa';
+                          echo $answers;
+                        ?>   
+                      </th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Program dilakukan dengan Metode yang Beragam</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                        <?php 
+                          $answers = $row['metode_beragam']== 0 ? 'Tidak' : 'Iyaa';
+                          echo $answers;
+                        ?>   
+                      </th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Program dilakukan Secara Berkelanjutan</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                        <?php 
+                          $answers = $row['berkelanjutan']== 0 ? 'Tidak' : 'Iyaa';
+                          echo $answers;
+                        ?>   
+                      </th>
+                    </tr>
+                    <tr class="text-gray-700 dark:text-gray-100">
+                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Hasil Program Mengalami Peningkatan Nilai</td>
+                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                        <?php 
+                          $answers = $row['peningkatan']== 0 ? 'Tidak' : 'Iyaa';
+                          echo $answers;
+                        ?>   
+                      </th>
+                    </tr>
+                  </tbody>
+                </table>    
+              </div>
+            </div>
+          </div>
+          <div class="flex w-full mt-10 px-6">
+            <a href="penilaian.php" class="text-white w-full transition bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 hover:shadow-lg hover:-translate-y-1 hover:shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80 font-medium rounded-lg text-sm lg:text-lg px-5 py-3 text-center me-2 mb-2 ">Back Menu</a>
           </div>
         </div>
       </div>

@@ -15,7 +15,6 @@ if (!isset($_SESSION['id'])) {
   }
 }
 
-
 // Bagian Insert (Create)
 if (isset($_POST['submit_add'])) {
   $id_sekolah = $_POST['id_sekolah'];
@@ -27,18 +26,26 @@ if (isset($_POST['submit_add'])) {
   $password = substr($nip, -8);
   $username = str_replace('. ', '.', $nama);
   $username = str_replace(' ', '.', $username) . substr($nip, -4);
-  $email = "$username@$jabatan.disdindik.sch.id";
+  $email = "$username@$jabatan.dindikbud.sch.id";
   $email = strtolower($email);
 
   $sql = "INSERT INTO tendik (id_sekolah, nama, nip, jk, jabatan, pendidikan, email, password) 
           VALUES ('$id_sekolah', '$nama', '$nip', '$jk', '$jabatan', '$pendidikan', '$email', '$password')";
+  try {
+    if ($koneksi->query($sql) === TRUE) {
+      // Set status untuk alert berhasil
+      $status = "success";
+      $message = "Data berhasil disimpan!";
+    } else {-
+      // Set status untuk alert gagal
+      $status = "error";
+      $message = "Data gagal disimpan: " . $koneksi->error;
+    }
+  } catch (\Throwable $th) {
+      // Set status untuk alert gagal
+    $status = "error";
+    $message = "Data gagal disimpan: " . $koneksi->error;
 
-  if ($koneksi->query($sql) === TRUE) {
-      // Redirect to tendikk.php after successful insertion
-      header("Location: tendik.php");
-      exit();
-  } else {
-      echo "Error: " . $sql . "<br>" . $koneksi->error;
   }
 }
 
@@ -56,12 +63,21 @@ if (isset($_POST['submit_edit'])) {
     $sql = "UPDATE tendik SET id_sekolah='$id_sekolah', nama='$nama', nip='$nip', jk='$jk', 
             jabatan='$jabatan', pendidikan='$pendidikan' WHERE id='$id'";
 
-    if ($koneksi->query($sql) === TRUE) {
-        // Redirect to tendikk.php after successful update
-        header("Location: tendik.php");
-        exit();
-    } else {
-        echo "Error: " . $sql . "<br>" . $koneksi->error;
+    try {
+      if ($koneksi->query($sql) === TRUE) {
+        // Set status untuk alert berhasil
+        $status = "success";
+        $message = "Data berhasil disimpan!";
+      } else {-
+        // Set status untuk alert gagal
+        $status = "error";
+        $message = "Data gagal disimpan: " . $koneksi->error;
+      }
+    } catch (\Throwable $th) {
+        // Set status untuk alert gagal
+      $status = "error";
+      $message = "Data gagal disimpan: " . $koneksi->error;
+
     }
 }
 
@@ -73,24 +89,44 @@ if (isset($_POST['reset_password'])) {
 
     $sql = "UPDATE tendik SET password='$password' WHERE id='$id'";
 
-    if ($koneksi->query($sql) === TRUE) {
-        // Redirect to tendikk.php after successful update
-        header("Location: tendik.php");
-        exit();
-    } else {
-        echo "Error: " . $sql . "<br>" . $koneksi->error;
+    try {
+      if ($koneksi->query($sql) === TRUE) {
+        // Set status untuk alert berhasil
+        $status = "success";
+        $message = "Password berhasil direset!";
+      } else {-
+        // Set status untuk alert gagal
+        $status = "error";
+        $message = "Password gagal direset: " . $koneksi->error;
+      }
+    } catch (\Throwable $th) {
+        // Set status untuk alert gagal
+      $status = "error";
+      $message = "Password gagal direset: " . $koneksi->error;
+
     }
 }
 
 // Delete record
-if (isset($_GET['delete'])) {
-    $id = $_GET['delete'];
+if (isset($_POST['delete'])) {
+    $id = $_POST['id'];
     $sql = "DELETE FROM tendik WHERE id='$id'";
 
-    if ($koneksi->query($sql) === TRUE) {
-        echo "Data berhasil dihapus.";
-    } else {
-        echo "Error: " . $sql . "<br>" . $koneksi->error;
+    try {
+      if ($koneksi->query($sql) === TRUE) {
+        // Set status untuk alert berhasil
+        $status = "success";
+        $message = "Data berhasil disimpan!";
+      } else {-
+        // Set status untuk alert gagal
+        $status = "error";
+        $message = "Data gagal disimpan: " . $koneksi->error;
+      }
+    } catch (\Throwable $th) {
+        // Set status untuk alert gagal
+      $status = "error";
+      $message = "Data gagal disimpan: " . $koneksi->error;
+
     }
 }
 
@@ -106,17 +142,34 @@ if (isset($_GET['edit'])) {
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
+    <title>Guru dan Tendik | Sistem Informasi Mutu Program Remedial dan Pengayaan</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="src\css\output.css" rel="stylesheet" />
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
     />
   </head>
   <body>
+<script>
+<?php if (isset($status) && isset($message)): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: '<?= $status ?>', 
+            title: '<?= $message ?>',
+            showConfirmButton: true
+        }).then(() => {
+            // Redirect setelah SweetAlert ditutup (opsional)
+            window.location.href = "tendik.php";
+        });
+    });
+<?php endif; ?>
+</script>
+
     <nav
       class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
     >
@@ -153,7 +206,7 @@ if (isset($_GET['edit'])) {
               />
               <span
                 class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
-                >Dindikbud</span
+                >SIMAPREM</span
               >
             </a>
           </div>
@@ -196,14 +249,6 @@ if (isset($_GET['edit'])) {
                       class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
                       >Dashboard</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
-                      role="menuitem"
-                      >Change Password</a
                     >
                   </li>
                   <li>
@@ -441,6 +486,7 @@ if (isset($_GET['edit'])) {
                       <th scope="col" class="p-4">Jabatan</th>
                       <th scope="col" class="p-4">Jenis Kelamin</th>
                       <th scope="col" class="p-4">Pendidikan</th>
+                      <th scope="col" class="p-4">E-Mail</th>
                       <th scope="col" class="p-4">Action</th>
                     </tr>
                   </thead>
@@ -459,10 +505,10 @@ if (isset($_GET['edit'])) {
 
                   //kondisi jika parameter pencarian kosong
                   if ($kolomKataKunci == "") {
-                      $tendik = mysqli_query($koneksi, "SELECT  tendik.id AS id, sekolah.nama AS nama_sekolah, tendik.nama AS nama, tendik.nip AS nip, tendik.jk AS jk, tendik.jabatan AS jabatan, tendik.pendidikan AS pendidikan FROM `tendik` INNER JOIN sekolah ON tendik.id_sekolah = sekolah.id ORDER BY nama_sekolah, jabatan LIMIT " . $limitStart . "," . $limit);
+                      $tendik = mysqli_query($koneksi, "SELECT  tendik.id AS id, sekolah.nama AS nama_sekolah, tendik.nama AS nama, tendik.nip AS nip, tendik.jk AS jk, tendik.jabatan AS jabatan, tendik.pendidikan AS pendidikan, tendik.email as email FROM `tendik` INNER JOIN sekolah ON tendik.id_sekolah = sekolah.id ORDER BY nama_sekolah, jabatan LIMIT " . $limitStart . "," . $limit);
                   } else {
                       //kondisi jika parameter kolom pencarian diisi
-                      $tendik = mysqli_query($koneksi, "SELECT tendik.id AS id, sekolah.nama AS nama_sekolah, tendik.nama AS nama, tendik.nip AS nip, tendik.jk AS jk, tendik.jabatan AS jabatan, tendik.pendidikan AS pendidikan FROM `tendik` INNER JOIN sekolah ON tendik.id_sekolah = sekolah.id WHERE sekolah.nama LIKE '%$kolomKataKunci%' OR tendik.nama LIKE '%$kolomKataKunci%' OR tendik.nip LIKE '%$kolomKataKunci%' OR tendik.jk LIKE '%$kolomKataKunci%' OR tendik.jabatan LIKE '%$kolomKataKunci%' OR tendik.pendidikan LIKE '%$kolomKataKunci%' ORDER BY nama_sekolah, jabatan LIMIT $limitStart , $limit");
+                      $tendik = mysqli_query($koneksi, "SELECT tendik.id AS id, sekolah.nama AS nama_sekolah, tendik.nama AS nama, tendik.nip AS nip, tendik.jk AS jk, tendik.jabatan AS jabatan, tendik.pendidikan AS pendidikan, tendik.email as email FROM `tendik` INNER JOIN sekolah ON tendik.id_sekolah = sekolah.id WHERE sekolah.nama LIKE '%$kolomKataKunci%' OR tendik.nama LIKE '%$kolomKataKunci%' OR tendik.nip LIKE '%$kolomKataKunci%' OR tendik.jk LIKE '%$kolomKataKunci%' OR tendik.jabatan LIKE '%$kolomKataKunci%' OR tendik.pendidikan LIKE '%$kolomKataKunci%' ORDER BY nama_sekolah, jabatan LIMIT $limitStart , $limit");
                   }
 
                   $no = $limitStart + 1;
@@ -505,7 +551,10 @@ if (isset($_GET['edit'])) {
                                   <?= ($row['jk']=='L') ? 'Laki-Laki' : 'Perempuan';?>
                               </td>
                               <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
-                                  <?php echo str_replace('D', 'Diploma ',str_replace('S', 'Strata ', $row['pendidikan'])); ?>
+                                  <?php echo str_replace('wkwk', 'SMA/SMK',str_replace('S', 'Strata ',str_replace('D', 'Diploma ',str_replace('SMA/SMK', 'wkwk ', $row['pendidikan'])))); ?>
+                              </td>
+                              <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                                  <?php echo $row['email']; ?>
                               </td>
                               <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                   <div class="flex items-center space-x-4">
@@ -524,14 +573,28 @@ if (isset($_GET['edit'])) {
                                     </svg>
                                     Edit
                                   </button>
-                                      <a href="?delete=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this record?');" class="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900">
-                                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2 -ml-0.5" viewbox="0 0 20 20" fill="currentColor"
-                                        aria-hidden="true">
-                                        <path fill-rule="evenodd"
+                                  <button
+                                    type="button"
+                                    data-modal-target="deleteModal<?php echo $row['id']; ?>"
+                                    data-modal-toggle="deleteModal<?php echo $row['id']; ?>"
+                                      
+                                      class="flex items-center text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-3 py-2 text-center dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
+                                    >
+                                      <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-4 w-4 mr-2 -ml-0.5"
+                                        viewbox="0 0 20 20"
+                                        fill="currentColor"
+                                        aria-hidden="true"
+                                      >
+                                        <path
+                                          fill-rule="evenodd"
                                           d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
-                                          clip-rule="evenodd" />
+                                          clip-rule="evenodd"
+                                        />
                                       </svg>
-                                      Delete</a>
+                                      Delete
+                                    </button>
                                       <!-- Tombol Preview -->
                             <form action="" method="POST">
                                 <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
@@ -551,6 +614,76 @@ if (isset($_GET['edit'])) {
                                     </div>
                               </td>
                           </tr>
+                          <!-- Modal Confirm Hapus -->
+                          <div
+                            id="deleteModal<?php echo $row['id']?>" 
+                            tabindex="-1"
+                            aria-hidden="true"
+                            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+                          >
+                            <div class="relative p-4 w-full max-w-md max-h-full">
+                              <!-- Modal content -->
+                              <div
+                                class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
+                              >
+                                <button
+                                  type="button"
+                                  class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                  data-modal-toggle="deleteModal<?php echo $row['id']?>"
+                                >
+                                  <svg
+                                    aria-hidden="true"
+                                    class="w-5 h-5"
+                                    fill="currentColor"
+                                    viewbox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                      clip-rule="evenodd"
+                                    />
+                                  </svg>
+                                  <span class="sr-only">Close modal</span>
+                                </button>
+                                <svg
+                                  class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto"
+                                  aria-hidden="true"
+                                  fill="currentColor"
+                                  viewbox="0 0 20 20"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    fill-rule="evenodd"
+                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                    clip-rule="evenodd"
+                                  />
+                                </svg>
+                                <p class="mb-4 text-gray-500 dark:text-gray-300">
+                                  Are you sure you want to delete this item?
+                                </p>
+                                <div class="flex justify-center items-center space-x-4">
+                                <form method="post">
+                                  <input type="hidden" name="id" value="<?php echo $row['id']?>">
+                                  <button
+                                    data-modal-toggle="deleteModal"
+                                    type="button"
+                                    class="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                                  >
+                                    No, cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    name="delete"
+                                    class="py-2 px-3 text-sm font-medium text-center text-white bg-red-600 rounded-lg hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-500 dark:hover:bg-red-600 dark:focus:ring-red-900"
+                                  >
+                                    Yes, I'm sure
+                                  </button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                           <!-- Modal Edit -->
                           <div
                             id="updateProductModal<?php echo $row['id']; ?>"
@@ -611,7 +744,7 @@ if (isset($_GET['edit'])) {
                                     <!-- Nama -->
                                     <div>
                                       <label for="nama" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Nama</label>
-                                      <input type="text" name="nama" id="nama" value=<?php echo $row['nama']?> class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Insert Nama" required>
+                                      <input type="text" name="nama" id="nama" value="<?php echo $row['nama']?>" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Insert Nama" required>
                                     </div>
 
                                     <!-- NIP -->
@@ -634,7 +767,8 @@ if (isset($_GET['edit'])) {
                                       <label for="jabatan" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Jabatan</label>
                                       <select name="jabatan" id="jabatan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
                                         <option value="Kepsek" <?php if ($row['jabatan']== 'Kepsek') echo 'selected'; ?>>Kepsek</option>
-                                        <option value="Guru">Guru</option>
+                                        <option value="Guru" <?php if ($row['jabatan']== 'Guru') echo 'selected'; ?>>Guru</option>
+                                        <option value="Pengawas" <?php if ($row['jabatan']== 'Pengawas') echo 'selected'; ?>>Pengawas</option>
                                       </select>
                                     </div>
 
@@ -642,7 +776,7 @@ if (isset($_GET['edit'])) {
                                     <div>
                                       <label for="pendidikan" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pendidikan</label>
                                       <select name="pendidikan" id="pendidikan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                        <option value="SMAS/SMK" <?php if ($row['pendidikan']== 'SMAS/SMK') echo 'selected'; ?>>SMAS/SMK</option>
+                                        <option value="SMA/SMK" <?php if ($row['pendidikan']== 'SMA/SMK') echo 'selected'; ?>>SMA/SMK</option>
                                         <option value="D1" <?php if ($row['pendidikan']== 'D1') echo 'selected'; ?>>D1</option>
                                         <option value="D2" <?php if ($row['pendidikan']== 'D2') echo 'selected'; ?>>D2</option>
                                         <option value="D3" <?php if ($row['pendidikan']== 'D3') echo 'selected'; ?>>D3</option>
@@ -996,7 +1130,7 @@ if (isset($_GET['edit'])) {
                 <div>
                   <label for="pendidikan" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Pendidikan</label>
                   <select name="pendidikan" id="pendidikan" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                    <option value="SMAS/SMK">SMAS/SMK</option>
+                    <option value="SMA/SMK">SMA/SMK</option>
                     <option value="D1">D1</option>
                     <option value="D2">D2</option>
                     <option value="D3">D3</option>
@@ -1099,5 +1233,6 @@ if (isset($_GET['edit'])) {
       </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+
   </body>
 </html>

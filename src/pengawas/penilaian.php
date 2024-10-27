@@ -14,21 +14,63 @@ if (!isset($_SESSION['id'])) {
   exit;
   }
 }
+$id_pengawas = $_SESSION['id'];
+$sql_detail = mysqli_query($koneksi, "SELECT * FROM tendik WHERE id = '$id_pengawas'");
+$detail_kepsek = mysqli_fetch_array($sql_detail);
+$id_sekolah = $detail_kepsek['id_sekolah'];
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+  if (isset($_POST['pass_val']) && isset($_POST['old_password']) && isset($_POST['new_password'])) {
+    $id = $_POST['id'];
+    $new_pass = $_POST['new_password'];
+    $queryEdit = "UPDATE tendik SET password = '$new_pass' WHERE tendik.id = $id";
+    $edit = mysqli_query($koneksi, $queryEdit);
+    try {
+      if ($edit)
+      {
+        $status = "success";
+        $message = "Password berhasil diubah!";
+      } else {
+        $status = "error";
+        $message = "Password gagal diubah";
+      } 
+    } catch (\Throwable $th) {
+      $status = "error";
+      $message = "Password gagal diubah";
+    }
+  }  
+} 
 ?>
 
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Dashboard | Sistem Penilaian Program Remedial & Pengayaan</title>
+    <title>Penilaian Mutu | Sistem Informasi Mutu Program Remedial dan Pengayaan</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="src\css\output.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
     />
   </head>
+  <script>
+<?php if (isset($status) && isset($message)): ?>
+    document.addEventListener('DOMContentLoaded', function() {
+        Swal.fire({
+            icon: '<?= $status ?>', 
+            title: '<?= $message ?>',
+            showConfirmButton: true
+        }).then(() => {
+            // Redirect setelah SweetAlert ditutup (opsional)
+            window.location.href = "../../index.php";
+        });
+    });
+<?php endif; ?>
+</script>
   <body>
     <nav
       class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
@@ -66,7 +108,7 @@ if (!isset($_SESSION['id'])) {
               />
               <span
                 class="self-center text-xl font-semibold sm:text-2xl whitespace-nowrap dark:text-white"
-                >Dindikbud</span
+                >SIMAPREM</span
               >
             </a>
           </div>
@@ -112,11 +154,11 @@ if (!isset($_SESSION['id'])) {
                     >
                   </li>
                   <li>
-                    <a
-                      href="#"
-                      class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
+                    <button
+                      data-modal-target="authentication-modal" data-modal-toggle="authentication-modal"
+                      class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-600 dark:hover:text-white"
                       role="menuitem"
-                      >Change Password</a
+                      >Change Password</button
                     >
                   </li>
                   <li>
@@ -130,6 +172,56 @@ if (!isset($_SESSION['id'])) {
                 </ul>
               </div>
             </div>
+            <div id="authentication-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+              <div class="relative p-4 w-full max-w-md max-h-full">
+                  <!-- Modal content -->
+                  <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+                      <!-- Modal header -->
+                      <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                          <h3 class="text-xl font-semibold text-gray-900 dark:text-white">
+                              Change Password
+                          </h3>
+                          <button type="button" class="end-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="authentication-modal">
+                              <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                              </svg>
+                              <span class="sr-only">Close modal</span>
+                          </button>
+                      </div>
+                      <!-- Modal body -->
+                      <div class="p-4 md:p-5">
+                      <form class="space-y-4" method="POST" onsubmit="return validatePassword()">
+                        <!-- Div untuk menampilkan pesan error -->
+                        <input type="hidden" name="pass_val" id="pass_val" value=<?=$_SESSION['password']?> />
+                        <input type="hidden" name="id" id="id" value=<?=$_SESSION['id']?> />
+                        <div id="error-message" class="hidden flex items-center p-4 mb-4 text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800" role="alert">
+                            <svg class="flex-shrink-0 inline w-4 h-4 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                            </svg>
+                            <span class="sr-only">Error</span>
+                            <div>
+                                <span class="font-medium" id="alert-title">Error!</span> <span id="alert-message"></span>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your old password</label>
+                            <input type="password" name="old_password" id="old_password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                        </div>
+                        <div>
+                            <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your new password</label>
+                            <input type="password" name="new_password" id="new_password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                        </div>
+                        <div>
+                            <label for="password" class="block  text-sm font-medium text-gray-900 dark:text-white">Confirm new password</label>
+                            <input type="password" name="confirm_password" id="confirm_password" placeholder="••••••••" class="bg-gray-50 mb-6 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required />
+                        </div>
+                        <button type="submit" nama="btn_change_pass" class="w-full text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Change Password</button>
+                        
+                      </form>
+                      </div>
+                  </div>
+              </div>
+          </div> 
           </div>
         </div>
       </div>
@@ -229,74 +321,37 @@ if (!isset($_SESSION['id'])) {
               >
                 <div class="flex-1 flex items-center space-x-2">
                   <h5>
-                    <span class="text-gray-500">Semua Mata Pelajaran:</span>
-                    <span class="dark:text-white">123456</span>
+                    <span class="text-gray-500">Result:</span>
+                    <span class="dark:text-white"><?=(isset($_GET['KataKunci'])) ? $_GET['KataKunci'] : "Semua Mata Pelajaran";?></span>
                   </h5>
-                  <h5 class="text-gray-500 dark:text-gray-400 ml-1">
-                    1-100 (436)
-                  </h5>
-                  <button
-                    type="button"
-                    class="group"
-                    data-tooltip-target="results-tooltip"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-4 w-4 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white"
-                      viewbox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                    <span class="sr-only">More info</span>
-                  </button>
-                  <div
-                    id="results-tooltip"
-                    role="tooltip"
-                    class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-gray-700"
-                  >
-                    Showing 1-100 of 436 results
-                    <div class="tooltip-arrow" data-popper-arrow=""></div>
-                  </div>
                 </div>
               </div>
               <div
                 class="flex flex-col md:flex-row items-stretch md:items-center md:space-x-3 space-y-3 md:space-y-0 justify-between mx-4 py-4 border-t dark:border-gray-700"
               >
                 <div class="w-full md:w-1/2">
-                  <form class="flex items-center">
-                    <label for="simple-search" class="sr-only">Search</label>
+                  <form class="flex flex-row items-center mx-auto">   
+                    <label for="voice-search" class="sr-only">Search</label>
                     <div class="relative w-full">
-                      <div
-                        class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
-                      >
-                        <svg
-                          aria-hidden="true"
-                          class="w-5 h-5 text-gray-500 dark:text-gray-400"
-                          fill="currentColor"
-                          viewbox="0 0 20 20"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            fill-rule="evenodd"
-                            clip-rule="evenodd"
-                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                          />
+                      <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                        <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
                         </svg>
                       </div>
-                      <input
-                        type="text"
-                        id="simple-search"
-                        placeholder="Cari Mata Pelajaran"
-                        required=""
-                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                      />
-                    </div>
+                      <input type="text" name="KataKunci" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Cari Mata Pelajaran" value="<?php if (isset($_GET['KataKunci']))  echo $_GET['KataKunci']; ?>"value="<?php if (isset($_GET['KataKunci']))  echo $_GET['KataKunci']; ?>" required />
+                      <?php if (isset($_GET['KataKunci']))  echo  
+                      "<a href='penilaian.php' class='absolute inset-y-0 end-0 flex items-center pe-3'>
+                      <svg  viewBox='0 0 24 24' fill='none' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' class='w-4 h-4 text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'>
+                        <path d='M19 6.41L17.59 5L12 10.59L6.41 5L5 6.41L10.59 12L5 17.59L6.41 19L12 13.41L17.59 19L19 17.59L13.41 12L19 6.41Z' fill='black'/>
+                        </svg>
+                      </a>";
+                        ?>
+                      </div>
+                      <button type="submit" class="inline-flex items-center py-2.5 px-3 ms-2 text-sm font-medium text-white bg-blue-700 rounded-lg border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+                        <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                        </svg>
+                      </button>
                   </form>
                 </div>
               </div>
@@ -308,19 +363,7 @@ if (!isset($_SESSION['id'])) {
                   class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
                   >
                     <tr>
-                      <th scope="col" class="p-4">
-                        <div class="flex items-center">
-                          <input
-                            id="checkbox-all"
-                            type="checkbox"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          />
-                          <label for="checkbox-all" class="sr-only"
-                            >checkbox</label
-                          >
-                        </div>
-                      </th>
-                      <th scope="col" class="p-4">Kode</th>
+                      <th scope="col" class="pl-8 p-4">Kode</th>
                       <th scope="col" class="p-4">Nama</th>
                       <th scope="col" class="p-4">Guru</th>
                       <th scope="col" class="p-4">KKM</th>
@@ -335,16 +378,16 @@ if (!isset($_SESSION['id'])) {
                     $kolomKataKunci = (isset($_GET['KataKunci'])) ? $_GET['KataKunci'] : "";
     
                     // Jumlah data per halaman
-                    $limit = 10;
+                    $limit = 5;
     
                     $limitStart = ($page - 1) * $limit;
     
                     //kondisi jika parameter pencarian kosong
                     if ($kolomKataKunci == "") {
-                      $mapel = mysqli_query($koneksi, "SELECT mapel.id AS id, mapel.kode_mapel AS kode_mapel, mapel.nama AS nama_mapel, tendik.nama AS nama_guru, mapel.kkm, mapel.mutu FROM `mapel` INNER JOIN tendik ON mapel.id_guru = tendik.id LIMIT " . $limitStart . "," . $limit);
+                      $mapel = mysqli_query($koneksi, "SELECT mapel.id AS id, mapel.kode_mapel AS kode_mapel, mapel.nama AS nama_mapel, tendik.nama AS nama_guru, mapel.kkm AS kkm, mapel.kelas AS kelas, mapel.ta AS ta, mapel.mutu FROM `mapel` INNER JOIN tendik ON mapel.id_guru = tendik.id JOIN sekolah ON tendik.id_sekolah = sekolah.id WHERE sekolah.id = $id_sekolah LIMIT " . $limitStart . "," . $limit);
                     } else {
                         //kondisi jika parameter kolom pencarian diisi
-                      $mapel = mysqli_query($koneksi, "SELECT mapel.id AS id, mapel.kode_mapel AS kode_mapel, mapel.nama AS nama_mapel, tendik.nama AS nama_guru, mapel.kkm, mapel.mutu FROM `mapel` INNER JOIN tendik ON mapel.id_guru = tendik.id WHERE nama LIKE '%$kolomKataKunci%' LIMIT " . $limitStart . "," . $limit);
+                      $mapel = mysqli_query($koneksi, "SELECT mapel.id AS id, mapel.kode_mapel AS kode_mapel, mapel.nama AS nama_mapel, tendik.nama AS nama_guru, mapel.kkm AS kkm, mapel.kelas AS kelas, mapel.ta AS ta, mapel.mutu FROM `mapel` INNER JOIN tendik ON mapel.id_guru = tendik.id JOIN sekolah ON tendik.id_sekolah = sekolah.id WHERE sekolah.id = $id_sekolah AND mapel.nama LIKE '%$kolomKataKunci%' OR mapel.kode_mapel LIKE '%$kolomKataKunci%' OR tendik.nama LIKE '%$kolomKataKunci%' OR mapel.kode_mapel LIKE '%$kolomKataKunci%' OR mapel.kelas LIKE '%$kolomKataKunci%' OR mapel.ta LIKE '%$kolomKataKunci%' OR mapel.kkm LIKE '%$kolomKataKunci%' LIMIT " . $limitStart . "," . $limit);
                     }
                     $no = $limitStart + 1;
     
@@ -355,22 +398,9 @@ if (!isset($_SESSION['id'])) {
                     <tr
                       class="border-b dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
                     >
-                      <td class="p-4 w-4">
-                        <div class="flex items-center">
-                          <input
-                            id="checkbox-table-search-1"
-                            type="checkbox"
-                            onclick="event.stopPropagation()"
-                            class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-                          />
-                          <label for="checkbox-table-search-1" class="sr-only"
-                            >checkbox</label
-                          >
-                        </div>
-                      </td>
                       <th
                         scope="row"
-                        class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                        class="pl-8 px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                       >
                         <div class="flex items-center mr-3"><?php echo $row['kode_mapel'];?></div>
                       </th>
@@ -470,28 +500,50 @@ if (!isset($_SESSION['id'])) {
                   </tbody>
                 </table>
               </div>
+              <?php
+              //kondisi jika parameter pencarian kosong
+              if ($kolomKataKunci == "") {
+                $countStmt = mysqli_query($koneksi,"SELECT COUNT(*) AS total_baris FROM mapel INNER JOIN tendik ON mapel.id_guru = tendik.id JOIN sekolah ON tendik.id_sekolah = sekolah.id WHERE sekolah.id = $id_sekolah");
+              } else {
+                $countStmt = mysqli_query($koneksi,"SELECT COUNT(*) AS total_baris from mapel INNER JOIN tendik ON mapel.id_guru = tendik.id JOIN sekolah ON tendik.id_sekolah = sekolah.id WHERE sekolah.id = $id_sekolah AND mapel.nama LIKE '%$kolomKataKunci%' OR tendik.nama LIKE '%$kolomKataKunci%' OR mapel.kode_mapel LIKE '%$kolomKataKunci%' OR mapel.kode_mapel LIKE '%$kolomKataKunci%' OR mapel.kelas LIKE '%$kolomKataKunci%' OR mapel.ta LIKE '%$kolomKataKunci%' OR mapel.kkm LIKE '%$kolomKataKunci%'"); 
+
+              }
+              $rowCount = mysqli_fetch_array($countStmt);
+              //Hitung semua jumlah data yang berada pada tabel Sisawa
+              $JumlahData = $rowCount['total_baris'];
+              // Hitung jumlah halaman yang tersedia
+              $jumlahPage = ceil($JumlahData / $limit);
+
+              // Jumlah link number 
+              $jumlahNumber = 1;
+
+              // Untuk awal link number
+              $startNumber = ($page > $jumlahNumber) ? $page - $jumlahNumber : 1;
+
+              // Untuk akhir link number
+              $endNumber = ($page < ($jumlahPage - $jumlahNumber)) ? $page + $jumlahNumber : $jumlahPage;
+              ?>
               <nav
-                class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
-                aria-label="Table navigation"
-              >
-                <span
-                  class="text-sm font-normal text-gray-500 dark:text-gray-400"
-                >
-                  Showing
-                  <span class="font-semibold text-gray-900 dark:text-white"
-                    >1-10</span
-                  >
-                  of
-                  <span class="font-semibold text-gray-900 dark:text-white"
-                    >1000</span
-                  >
-                </span>
-                <ul class="inline-flex items-stretch -space-x-px">
+              class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
+              aria-label="Table navigation">
+              <span
+                class="text-sm font-normal text-gray-500 dark:text-gray-400">
+                Showing
+                <span class="font-semibold text-gray-900 dark:text-white"><?=$limitStart+1?>-<?php echo $endNumber == $page ? $JumlahData : $page*$limit; ?></span>
+                of
+                <span class="font-semibold text-gray-900 dark:text-white"><?=$JumlahData?></span>
+              </span>
+              <ul class="inline-flex items-stretch -space-x-px">
+              <?php
+                    // Jika page = 1, maka LinkPrev disable
+                    if ($page == 1) {
+                  ?>
                   <li>
                     <a
-                      href="#"
-                      class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                    >
+                      href=""
+                      class="flex items-center justify-center cursor-not-allowed h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                      disabled
+                      >
                       <span class="sr-only">Previous</span>
                       <svg
                         class="w-5 h-5"
@@ -508,48 +560,18 @@ if (!isset($_SESSION['id'])) {
                       </svg>
                     </a>
                   </li>
+                  <?php
+                  } else {
+                    $LinkPrev = ($page > 1) ? $page - 1 : 1;
+
+                    if ($kolomKataKunci == "") {
+                    ?>
                   <li>
                     <a
-                      href="#"
-                      class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      >1</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      >2</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      aria-current="page"
-                      class="flex items-center justify-center text-sm z-10 py-2 px-3 leading-tight text-blue-600 bg-blue-50 border border-blue-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"
-                      >3</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      >...</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="flex items-center justify-center text-sm py-2 px-3 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                      >100</a
-                    >
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
-                    >
-                      <span class="sr-only">Next</span>
+                      href="penilaian.php?page=<?php echo $LinkPrev; ?>"
+                      class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"                      
+                      >
+                      <span class="sr-only">Previous</span>
                       <svg
                         class="w-5 h-5"
                         aria-hidden="true"
@@ -559,14 +581,149 @@ if (!isset($_SESSION['id'])) {
                       >
                         <path
                           fill-rule="evenodd"
-                          d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
                           clip-rule="evenodd"
                         />
                       </svg>
                     </a>
                   </li>
-                </ul>
-              </nav>
+                  <?php
+                  } else {
+                  ?>    
+                  <li>
+                    <a
+                      href="penilaian.php?KataKunci=<?php echo $kolomKataKunci; ?>&page=<?php echo $LinkPrev; ?>"
+                      class="flex items-center justify-center h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"                      
+                      >
+                      <span class="sr-only">Previous</span>
+                      <svg
+                        class="w-5 h-5"
+                        aria-hidden="true"
+                        fill="currentColor"
+                        viewbox="0 0 20 20"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </a>
+                  </li>
+                  <?php
+                      }
+                  }
+                  ?>
+
+                  <!-- Numberr -->
+                  <?php                    
+                    for ($i = $startNumber; $i <= $endNumber; $i++) {
+                        $linkActive = ($page == $i) ? ' class="text-blue-600 bg-blue-50 border border-blue-300 hover:bg-blue-100 hover:text-blue-700 dark:border-gray-700 dark:bg-gray-700 dark:text-white"' : '';
+                        $linkNonActive = ($page !== $i) ? ' class="text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"' : '';
+
+                        if ($kolomKataKunci == "") {
+                    ?>
+                            <li <?php echo $linkActive; echo $linkNonActive;?>>
+                              <a
+                                href="penilaian.php?page=<?php echo $i; ?>"
+                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight"
+                                ><?php echo $i; ?></a
+                              >
+                            </li>
+                            <?php
+                        } else {
+                            ?>
+                                <li <?php echo $linkActive; echo $linkNonActive;?>>
+                                <a href="penilaian.php?KataKunci=<?php echo $kolomKataKunci; ?>&page=<?php echo $i; ?>"
+                                class="flex items-center justify-center text-sm py-2 px-3 leading-tight"><?php echo $i; ?></a></li>
+                            <?php
+                        }
+                    }
+                            ?>
+
+                  <!-- Next -->
+                  <?php
+                  if ($page == $jumlahPage) {
+                  ?>
+                      <li>
+                        <a
+                          href=""
+                          class="flex items-center justify-center cursor-not-allowed h-full py-1.5 px-3 ml-0 text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                          disabled
+                        >
+                          <span class="sr-only">Next</span>
+                          <svg
+                            class="w-5 h-5"
+                            aria-hidden="true"
+                            fill="currentColor"
+                            viewbox="0 0 20 20"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              fill-rule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </a>
+                      </li>
+                      <?php
+                  } else {
+                      $linkNext = ($page < $jumlahPage) ? $page + 1 : $jumlahPage;
+                      if ($kolomKataKunci == "") {
+                      ?>
+                          <li>
+                            <a
+                              href="penilaian.php?page=<?php echo $linkNext; ?>"
+                              class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                            >
+                              <span class="sr-only">Next</span>
+                              <svg
+                                class="w-5 h-5"
+                                aria-hidden="true"
+                                fill="currentColor"
+                                viewbox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                  clip-rule="evenodd"
+                                />
+                              </svg>
+                            </a>
+                          </li>
+                      <?php
+                      } else {
+                      ?>
+                          <li>
+                            <a
+                              href="penilaian.php?KataKunci=<?php echo $kolomKataKunci; ?>&page=<?php echo $linkNext; ?>"
+                              class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
+                            >
+                              <span class="sr-only">Next</span>
+                              <svg
+                                class="w-5 h-5"
+                                aria-hidden="true"
+                                fill="currentColor"
+                                viewbox="0 0 20 20"
+                                xmlns="http://www.w3.org/2000/svg"
+                              >
+                                <path
+                                  fill-rule="evenodd"
+                                  d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                  clip-rule="evenodd"
+                                />
+                              </svg>
+                            </a>
+                          </li>
+                  <?php
+                      }
+                  }
+                  ?>
+              </ul>
+            </nav>
             </div>
           </div>
         </section>

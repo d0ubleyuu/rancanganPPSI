@@ -52,7 +52,8 @@ $result7 = mysqli_query($koneksi, $query7);
 if (mysqli_num_rows($result7) > 0) {
   $row7 = mysqli_fetch_assoc($result7);;
 } else {
-  echo "Tidak ada data ditemukan";
+    echo "";
+//   echo "Tidak ada data ditemukan";
 }
 ?>
 <!DOCTYPE html>
@@ -408,7 +409,7 @@ if (mysqli_num_rows($result7) > 0) {
                                 $persentase = 0;
                               }
                             ?>
-                          <span class="mr-2"><?=$persentase?>%</span>
+                          <span class="mr-2"><?=round($persentase, 1)?>%</span>
                           <div class="relative min-w-12 w-full">
                             <div class="overflow-hidden h-2 text-xs flex rounded bg-blue-200">
                               <div style="width: <?=$persentase?>%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600"></div>

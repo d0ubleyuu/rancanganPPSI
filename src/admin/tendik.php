@@ -596,13 +596,10 @@ if (isset($_GET['edit'])) {
                                       Delete
                                     </button>
                                       <!-- Tombol Preview -->
-                            <form action="" method="POST">
-                                <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
-                                <input type="hidden" name="nip" value="<?php echo $row['nip']; ?>">
                                 <button
                                     type="submit"
-                                    name="reset_password"
-                                    aria-controls="drawer-update-product"
+                                    data-modal-target="ResetModal<?php echo $row['id']; ?>"
+                                    data-modal-toggle="ResetModal<?php echo $row['id']; ?>"
                                     class="py-2 px-3 flex items-center text-sm font-medium text-center rounded-lg text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 me-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800 "
                                 >
                                     <svg class="h-4 w-4 mr-2 -ml-0.5" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -610,10 +607,70 @@ if (isset($_GET['edit'])) {
                                     </svg>
                                     Reset Password
                                 </button>
-                            </form>
                                     </div>
                               </td>
                           </tr>
+                          <!-- Modal Confirm Reset Password-->
+                          <div
+                            id="ResetModal<?php echo $row['id']?>" 
+                            tabindex="-1"
+                            aria-hidden="true"
+                            class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full"
+                          >
+                            <div class="relative p-4 w-full max-w-md max-h-full">
+                              <!-- Modal content -->
+                              <div
+                                class="relative p-4 text-center bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5"
+                              >
+                                <button
+                                  type="button"
+                                  class="text-gray-400 absolute top-2.5 right-2.5 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white"
+                                  data-modal-toggle="ResetModal<?php echo $row['id']?>"
+                                >
+                                <svg
+                                    aria-hidden="true"
+                                    class="w-5 h-5"
+                                    fill="currentColor"
+                                    viewbox="0 0 20 20"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                  >
+                                    <path
+                                      fill-rule="evenodd"
+                                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                                      clip-rule="evenodd"
+                                    />
+                                  </svg>
+                                  <span class="sr-only">Close modal</span>
+                                </button>
+                                <svg class="text-gray-400 dark:text-gray-500 w-11 h-11 mb-3.5 mx-auto" viewBox="0 0 20 20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5 6V7.998H15V6H5ZM11.998 11V14H14.998V11H11.998ZM2 5.754C2 5.02465 2.28973 4.32518 2.80546 3.80945C3.32118 3.29373 4.02065 3.004 4.75 3.004H15.25C15.9792 3.004 16.6785 3.29359 17.1942 3.8091C17.7099 4.32461 17.9997 5.02383 18 5.753V14.253C18 14.9823 17.7103 15.6818 17.1945 16.1975C16.6788 16.7133 15.9793 17.003 15.25 17.003H4.75C4.02065 17.003 3.32118 16.7133 2.80546 16.1975C2.28973 15.6818 2 14.9823 2 14.253V5.754ZM4 5.5V8.498C4 8.63061 4.05268 8.75778 4.14645 8.85155C4.24021 8.94532 4.36739 8.998 4.5 8.998H15.5C15.6326 8.998 15.7598 8.94532 15.8536 8.85155C15.9473 8.75778 16 8.63061 16 8.498V5.5C16 5.36739 15.9473 5.24021 15.8536 5.14645C15.7598 5.05268 15.6326 5 15.5 5H4.5C4.36739 5 4.24021 5.05268 4.14645 5.14645C4.05268 5.24021 4 5.36739 4 5.5Z"></path>
+                                    </svg>
+                                <p class="mb-4 text-gray-500 dark:text-gray-300">
+                                  Are you sure you want to Reset this Password?
+                                </p>
+                                <div class="flex justify-center items-center space-x-4">
+                                <form action="" method="POST">
+                                  <input type="hidden" name="id" value="<?php echo $row['id']; ?>">
+                                  <input type="hidden" name="nip" value="<?php echo $row['nip']; ?>">
+                                  <button
+                                    data-modal-toggle="ResetModal"
+                                    type="button"
+                                    class="py-2 px-3 text-sm font-medium text-gray-500 bg-white rounded-lg border border-gray-200 hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+                                  >
+                                    No, cancel
+                                  </button>
+                                  <button
+                                    type="submit"
+                                    name="reset_password"
+                                    class="py-2 px-3 text-sm font-medium text-center text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-900"
+                                  >
+                                    Yes, I'm sure
+                                  </button>
+                                  </form>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                           <!-- Modal Confirm Hapus -->
                           <div
                             id="deleteModal<?php echo $row['id']?>" 
@@ -984,7 +1041,7 @@ if (isset($_GET['edit'])) {
                       ?>
                           <li>
                             <a
-                              href="sekolah.php?page=<?php echo $linkNext; ?>"
+                              href="tendik.php?page=<?php echo $linkNext; ?>"
                               class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             >
                               <span class="sr-only">Next</span>
@@ -1008,7 +1065,7 @@ if (isset($_GET['edit'])) {
                       ?>
                           <li>
                             <a
-                              href="sekolah.php?KataKunci=<?php echo $kolomKataKunci; ?>&page=<?php echo $linkNext; ?>"
+                              href="tendik.php?KataKunci=<?php echo $kolomKataKunci; ?>&page=<?php echo $linkNext; ?>"
                               class="flex items-center justify-center h-full py-1.5 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
                             >
                               <span class="sr-only">Next</span>

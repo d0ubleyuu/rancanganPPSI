@@ -39,15 +39,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Fungsi untuk analisis mutu
-function analisisMutu($sesuai_jadwal, $metode_beragam, $berkelanjutan, $peningkataan) {
-  if ( $metode_beragam == 1 && $berkelanjutan == 1 && $peningkataan == 1) {
+function analisisMutu($nilai_hasil) {
+  if ( $nilai_hasil == 4) {
       return 4;
-  } elseif ( $metode_beragam == 1 && $berkelanjutan == 0 && $peningkataan == 1) {
+  } elseif ( $nilai_hasil == 3) {
       return 3;
-  } elseif ( $metode_beragam == 1 && $berkelanjutan == 0 && $peningkataan == 0) {
+  } elseif ( $nilai_hasil == 2) {
       return 2;
-  } else {
+  } elseif ( $nilai_hasil == 1) {
       return 1;
+  } else {
+      return 0;
   }
 }
 
@@ -64,7 +66,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $berkelanjutan = $_POST['berkelanjutan'];
     $peningkatan = $_POST['peningkatan'];
     $waktu = date("Y-m-d H:i:s");
-    $mutu = analisisMutu($sesuai_jadwal, $metode_beragam, $berkelanjutan, $peningkatan);
+    $nilai_hasil = $sesuai_jadwal + $metode_beragam + $berkelanjutan + $peningkatan;
+    $mutu = analisisMutu($nilai_hasil);
     
     $query = "INSERT INTO `penilaian_mutu` VALUES ('','$id_document','$id_mapel','$id_kepsek','$waktu','$doc_nilai','$remedial','$sesuai_jadwal','$metode_beragam','$berkelanjutan','$peningkatan','$mutu')";
     $simpan = mysqli_query($koneksi, $query);

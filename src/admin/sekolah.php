@@ -41,11 +41,10 @@ if (isset($_POST['add'])) {
         $stmt->bindParam(':bp', $bp);
         $stmt->bindParam(':akreditasi', $akreditasi);
         $stmt->execute();
-        $status = "success";
+        $statusSA = "success";
         $message = "Data berhasil disimpan!";
-        exit;
     } catch (PDOException $e) {
-        $status = "error";
+        $statusSA = "error";
         $message = "Data gagal disimpan: " . $e->getMessage();
     }
 }
@@ -69,12 +68,11 @@ if (isset($_POST['update'])) {
         $stmt->bindParam(':akreditasi', $akreditasi);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
-        $status = "success";
-        $message = "Data berhasil disimpan!";
-        exit;
+        $statusSA = "success";
+        $message = "Data berhasil diubah!";
     } catch (PDOException $e) {
-        $status = "error";
-        $message = "Data gagal disimpan: " . $e->getMessage();
+        $statusSA = "error";
+        $message = "Data gagal diubah: " . $e->getMessage();
     }
 }
 if (isset($_POST['delete'])) {
@@ -85,12 +83,11 @@ if (isset($_POST['delete'])) {
         $stmt = $conn->prepare($sql);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
-        $status = "success";
-        $message = "Data berhasil disimpan!";
-        exit;
+        $statusSA = "success";
+        $message = "Data berhasil dihapus!";
     } catch (PDOException $e) {
-        $status = "error";
-        $message = "Data gagal disimpan: " . $e->getMessage();
+        $statusSA = "error";
+        $message = "Data gagal dihapus: " . $e->getMessage();
     }
 }
 
@@ -112,21 +109,21 @@ if (isset($_POST['delete'])) {
       rel="stylesheet"
     />
   </head>
-  <script>
-<?php if (isset($status) && isset($message)): ?>
-    document.addEventListener('DOMContentLoaded', function() {
-        Swal.fire({
-            icon: '<?= $status ?>', 
-            title: '<?= $message ?>',
-            showConfirmButton: true
-        }).then(() => {
-            // Redirect setelah SweetAlert ditutup (opsional)
-            window.location.href = "sekolah.php";
-        });
-    });
-<?php endif; ?>
-</script>
   <body>
+    <script>
+  <?php if (isset($statusSA) && isset($message)): ?>
+      document.addEventListener('DOMContentLoaded', function() {
+          Swal.fire({
+              icon: '<?= $statusSA ?>', 
+              title: '<?= $message ?>',
+              showConfirmButton: true
+          }).then(() => {
+              // Redirect setelah SweetAlert ditutup (opsional)
+              window.location.href = "sekolah.php";
+          });
+      });
+  <?php endif; ?>
+  </script>
     <nav
       class="fixed top-0 z-50 w-full bg-white border-b border-gray-200 dark:bg-gray-800 dark:border-gray-700"
     >

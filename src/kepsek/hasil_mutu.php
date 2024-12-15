@@ -83,6 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="node_modules\flowbite\dist\flowbite.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-minimal@4/minimal.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
     <!-- <link
       href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css"
       rel="stylesheet"
@@ -260,7 +261,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       </div>
     </nav>
 
-    <div class="p-4 h-full">
+    <div class="p-4 h-full container mx-auto">
       <div
         class="px-4 py-8 flex flex-col items-center justify-center border-2 border-gray-200 border-dashed rounded-lg h-full dark:border-gray-700 mt-14 "
       >
@@ -351,7 +352,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           </div>
 
           <div class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow rounded-lg p-5">
-            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-5">Detail Sekolah</h2>
+            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-5">Detail Mata Pelajaran</h2>
             <div class="block w-full overflow-x-auto">
               <table class="items-center w-full relative bg-gray-50 dark:bg-gray-700 dark:border-gray-600 p-4 rounded-lg border border-gray-200">
                 <tbody>
@@ -486,39 +487,81 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                       </th>
                     </tr>
                     <tr class="text-gray-700 dark:text-gray-100">
-                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Program dilakukan Sesuai dengan Jadwal</td>
-                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                      <th colspan="2" class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-lg md:text-xl whitespace-nowrap p-4 text-left">
                         <?php 
-                          $answers = $row['sesuai_jadwal']== 0 ? 'Tidak' : 'Iyaa';
+                          $answers = $row['sesuai_jadwal']== 0 ? '❌' : '✅';
                           echo $answers;
                         ?>   
+                        Sistematis dan Terstruktur
+                        <button type="button" class="group" data-tooltip-target="results-tooltip1">
+                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" viewbox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="sr-only">More info</span>
+                        </button>
+                        <div id="results-tooltip1" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-slate-700">
+                            Program Remedial dan Pengayaan <?php $answers = $row['sesuai_jadwal']== 0 ? 'Tidak' : ''; echo $answers;?>  Dilakukan Sesuai Jadwal
+                            <div class="tooltip-arrow" data-popper-arrow=""></div>
+                        </div>
+                      <!-- <div class="flex-1 flex items-center space-x-2">
+                      </div> -->
                       </th>
                     </tr>
                     <tr class="text-gray-700 dark:text-gray-100">
-                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Program dilakukan dengan Metode yang Beragam</td>
-                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                      <th colspan="2" class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-lg md:text-xl whitespace-nowrap p-4 text-left">
                         <?php 
-                          $answers = $row['metode_beragam']== 0 ? 'Tidak' : 'Iyaa';
+                          $answers = $row['metode_beragam']== 0 ? '❌' : '✅';
                           echo $answers;
                         ?>   
+                        Teknik Beragam
+                        <button type="button" class="group" data-tooltip-target="results-tooltip2">
+                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" viewbox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="sr-only">More info</span>
+                        </button>
+                        <div id="results-tooltip2" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-slate-700">
+                            Program Remedial dan Pengayaan <?php $answers = $row['metode_beragam']== 0 ? 'Tidak' : ''; echo $answers;?>  Dilakukan dengan Metode yang Beragam 
+                            <div class="tooltip-arrow" data-popper-arrow=""></div>
+                        </div>
                       </th>
                     </tr>
                     <tr class="text-gray-700 dark:text-gray-100">
-                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Program dilakukan Secara Berkelanjutan</td>
-                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                      <th colspan="2" class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-lg md:text-xl whitespace-nowrap p-4 text-left">
                         <?php 
-                          $answers = $row['berkelanjutan']== 0 ? 'Tidak' : 'Iyaa';
+                          $answers = $row['berkelanjutan']== 0 ? '❌' : '✅';
                           echo $answers;
                         ?>   
+                        Berkelanjutan
+                        <button type="button" class="group" data-tooltip-target="results-tooltip3">
+                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" viewbox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="sr-only">More info</span>
+                        </button>
+                        <div id="results-tooltip3" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-slate-700">
+                            Program Remedial dan Pengayaan <?php $answers = $row['berkelanjutan']== 0 ? 'Tidak' : ''; echo $answers;?>  Dilakukan Secara Berkelanjutan 
+                            <div class="tooltip-arrow" data-popper-arrow=""></div>
+                        </div>
                       </th>
                     </tr>
                     <tr class="text-gray-700 dark:text-gray-100">
-                      <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">Hasil Program Mengalami Peningkatan Nilai</td>
-                      <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-sm md:text-base whitespace-nowrap p-4 text-left">
+                      <th colspan="2" class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-lg md:text-xl whitespace-nowrap p-4 text-left">
                         <?php 
-                          $answers = $row['peningkatan']== 0 ? 'Tidak' : 'Iyaa';
+                          $answers = $row['peningkatan']== 0 ? '❌' : '✅';
                           echo $answers;
                         ?>   
+                        Peningkatan Hasil
+                        <button type="button" class="group" data-tooltip-target="results-tooltip4">
+                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" viewbox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="sr-only">More info</span>
+                        </button>
+                        <div id="results-tooltip4" role="tooltip" class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-slate-900 rounded-lg shadow-sm opacity-0 tooltip dark:bg-slate-700">
+                            Hasil Program Remedial dan Pengayaan <?php $answers = $row['peningkatan']== 0 ? 'Tidak' : ''; echo $answers;?>  Mengalami Peningkatan Nilai 
+                            <div class="tooltip-arrow" data-popper-arrow=""></div>
+                        </div>
                       </th>
                     </tr>
                   </tbody>

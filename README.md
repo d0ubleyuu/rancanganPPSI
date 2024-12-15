@@ -49,12 +49,8 @@ Aplikasi dapat diakses melalui link [https://simaprem.wuaze.com/](https://simapr
 ```
 
 ```bash
-<<<<<<< HEAD
   username : alifia.putri3333@guru.dindikbud.sch.id
   password : 33333333
-=======
-  git pull
->>>>>>> 69349f55761df03c43c062ca14de81cb16bb6307
 ```
 
 ### Role Guru
